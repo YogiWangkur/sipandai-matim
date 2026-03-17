@@ -5,6 +5,11 @@
   <!-- PENTING: Mencegah zoom paksa di HP agar terasa seperti aplikasi asli -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
+  <!-- Identitas Web di Google -->
+  <title>SIPANDAI - Kabupaten Manggarai Timur</title>
+  <meta name="description" content="Sistem Informasi Monitoring SPAM Kabupaten Manggarai Timur. Aplikasi pendataan, pelaporan, dan pemantauan infrastruktur air minum.">
+  <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg">
+
   <!-- Frameworks & Libraries Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -188,7 +193,7 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <!-- PERBAIKAN: Tombol GPS dirapikan agar tidak memanjang keluar layar HP -->
+            <!-- TOMBOL GPS ASLI KEMBALI -->
             <div class="col-md-12">
               <label class="form-label">8 & 9. Titik Koordinat GPS</label>
               <div class="row g-2">
@@ -358,6 +363,31 @@
 </div>
 
 <script>
+  // =========================================================================
+  // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
+  // CONTOH: const SCRIPT_URL = "https://script.google.com/macros/s/AKfyc.../exec";
+  // =========================================================================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
+
+  // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
+  async function fetchAPI(action, payload = {}) {
+    if (!SCRIPT_URL || SCRIPT_URL === "") {
+      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris 163!");
+      return { success: false, message: "Koneksi database belum diatur." };
+    }
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, payload: payload })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw new Error("Gagal terhubung ke server database.");
+    }
+  }
+
   let currentUser = "";
   let currentUserRole = "";
   let windowAllReports = []; 
@@ -367,23 +397,20 @@
   let isDataLoaded = false;
   let isApprovalLoaded = false;
 
-  window.onload = function() {
-    google.script.run
-      .withSuccessHandler(function(url) {
-        if(url && url.length > 5) {
-          let finalUrl = url;
-          if (finalUrl.includes("id=")) {
-            let fileId = finalUrl.split("id=")[1].split("&")[0];
-            finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
-          }
-          document.getElementById('login-logo').src = finalUrl;
-          document.getElementById('sidebar-logo').src = finalUrl;
+  window.onload = async function() {
+    try {
+      let res = await fetchAPI('getAppLogo');
+      let url = res.url;
+      if(url && url.length > 5) {
+        let finalUrl = url;
+        if (finalUrl.includes("id=")) {
+          let fileId = finalUrl.split("id=")[1].split("&")[0];
+          finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
-      })
-      .withFailureHandler(function(err) {
-        console.log("Gagal memuat logo: " + err);
-      })
-      .getAppLogo();
+        document.getElementById('login-logo').src = finalUrl;
+        document.getElementById('sidebar-logo').src = finalUrl;
+      }
+    } catch(err) { console.log("Gagal memuat logo: " + err); }
   };
 
   function changeLogoUrl() {
@@ -393,25 +420,18 @@
   function handleLogoUpload(input) {
     if(input.files && input.files[0]) {
       let reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = async e => {
         let base64 = e.target.result;
         document.getElementById('login-logo').src = base64;
         document.getElementById('sidebar-logo').src = base64;
         
         setLoader(true, "Mengunggah Logo ke Server...");
-        google.script.run
-          .withSuccessHandler(res => {
-            setLoader(false);
-            if(res.success) {
-              alert(res.message);
-            } else {
-              alert("Gagal memperbarui logo: " + res.message);
-            }
-          })
-          .withFailureHandler(err => {
-            setLoader(false); alert("Error menyimpan logo: " + err.message);
-          })
-          .uploadAppLogo(base64);
+        try {
+          let res = await fetchAPI('uploadAppLogo', { base64Str: base64 });
+          setLoader(false);
+          if(res.success) alert(res.message);
+          else alert("Gagal memperbarui logo: " + res.message);
+        } catch(err) { setLoader(false); alert("Error menyimpan logo: " + err.message); }
       };
       reader.readAsDataURL(input.files[0]);
     }
@@ -440,51 +460,49 @@
     } return "-";
   }
 
-  function doRegister() {
+  async function doRegister() {
     const u = document.getElementById('r-user').value;
     const p = document.getElementById('r-pass').value;
     if(!u || !p) return alert("Isi username dan password");
+    
     setLoader(true, "Mendaftarkan Akun...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        alert(res.message);
-        if(res.success) toggleAuth('login');
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); })
-      .registerUser(u, p);
+    try {
+      let res = await fetchAPI('registerUser', { u: u, p: p });
+      setLoader(false);
+      alert(res.message);
+      if(res.success) toggleAuth('login');
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
-  function doLogin(){
+  async function doLogin(){
     const u = document.getElementById('l-user').value;
     const p = document.getElementById('l-pass').value;
     if(!u || !p) return alert("Harap isi username dan password");
+    
     setLoader(true, "Verifikasi...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success){
-          currentUser = res.username;
-          currentUserRole = (res.role || "petugas").toLowerCase(); 
-          
-          document.getElementById('displayUser').innerText = `User: ${res.username}`;
-          document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
-          
-          if (currentUserRole === 'admin') {
-             document.getElementById('menu-admin').style.display = 'block'; 
-             document.getElementById('btn-edit-logo').style.display = 'block'; 
-             showPage('dashboard');
-          } else {
-             document.getElementById('menu-admin').style.display = 'none'; 
-             document.getElementById('btn-edit-logo').style.display = 'none'; 
-             showPage('form');
-          }
-          document.getElementById('authBox').style.display = 'none';
-          document.getElementById('mainApp').style.display = 'block';
-        } else { alert(res.message); }
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); })
-      .loginUser(u, p);
+    try {
+      let res = await fetchAPI('loginUser', { u: u, p: p });
+      setLoader(false);
+      if(res.success){
+        currentUser = res.username;
+        currentUserRole = (res.role || "petugas").toLowerCase(); 
+        
+        document.getElementById('displayUser').innerText = `User: ${res.username}`;
+        document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
+        
+        if (currentUserRole === 'admin') {
+           document.getElementById('menu-admin').style.display = 'block'; 
+           document.getElementById('btn-edit-logo').style.display = 'block'; 
+           showPage('dashboard');
+        } else {
+           document.getElementById('menu-admin').style.display = 'none'; 
+           document.getElementById('btn-edit-logo').style.display = 'none'; 
+           showPage('form');
+        }
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+      } else { alert(res.message); }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
   function showPage(pageId){
@@ -536,7 +554,7 @@
     return "";
   }
 
-  function submitData(){
+  async function submitData(){
     const data = {
       rowIdx: windowEditRowIdx,
       f_unitSpam: document.getElementById('f_unitSpam').value,
@@ -576,22 +594,20 @@
     if(!data.f_unitSpam || !data.f_desa) return alert("Nama Unit SPAM dan Desa Wajib Diisi!");
 
     setLoader(true, "Menyimpan Database...");
-    
-    let serverCall = google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success){
-          alert("Berhasil! Database tersimpan.");
-          clearForm();
-          isDataLoaded = false; 
-          if (currentUserRole === 'admin') showPage('data');
-          else showPage('form');
-        } else { alert("Gagal: " + res.message); }
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); });
-
-    if (data.rowIdx) serverCall.updateLaporan(data);
-    else serverCall.simpanLaporan(data);
+    try {
+      let res;
+      if (data.rowIdx) res = await fetchAPI('updateLaporan', { obj: data });
+      else res = await fetchAPI('simpanLaporan', { obj: data });
+      
+      setLoader(false);
+      if(res.success){
+        alert("Berhasil! Database tersimpan.");
+        clearForm();
+        isDataLoaded = false; 
+        if (currentUserRole === 'admin') showPage('data');
+        else showPage('form');
+      } else { alert("Gagal: " + res.message); }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
   function clearForm(){
@@ -600,72 +616,71 @@
     fotoBase64 = ""; windowEditRowIdx = null;
     document.getElementById('form-title').innerHTML = `Formulir Database SPAM`;
     let btn = document.getElementById('btnSubmit');
-    if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow-sm'; }
+    if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow'; }
   }
 
-  function loadDashboardData(forceRefresh = false){
+  async function loadDashboardData(forceRefresh = false){
     if(forceRefresh) isDataLoaded = false;
     if(isDataLoaded) return;
 
     setLoader(true, "Menarik Data...");
-    google.script.run
-      .withSuccessHandler(data => {
-        setLoader(false);
-        isDataLoaded = true; 
-        const tbody = document.getElementById('t-body');
-        if(!data || data.length === 0) {
-          document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
-          document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
-          tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; return;
+    try {
+      let res = await fetchAPI('getLaporan');
+      let data = res.data || [];
+      
+      setLoader(false);
+      isDataLoaded = true; 
+      const tbody = document.getElementById('t-body');
+      
+      if(!data || data.length === 0) {
+        document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
+        document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; return;
+      }
+      
+      let countBaik = 0; let countRusak = 0; let totalJiwa = 0;
+      windowAllReports = data.reverse(); 
+
+      const htmlRows = windowAllReports.map((r, index) => {
+        let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
+        if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) {
+          countBaik++; status = `<span class="badge bg-success">${status}</span>`;
+        } else if (status !== "-") {
+          countRusak++; status = `<span class="badge bg-danger">${status}</span>`;
         }
+
+        let jiwa = parseInt(getSafeVal(r, 'JumlahJiwa', 'Jiwa')) || 0;
+        totalJiwa += jiwa;
+
+        let tglStr = getSafeVal(r, 'Timestamp', 'Waktu');
+        let dateFormated = tglStr;
+        try { if (tglStr !== "-" && tglStr !== "") { let d = new Date(tglStr); if (!isNaN(d.getTime())) dateFormated = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
+
+        let kec = getSafeVal(r, 'Kecamatan'); let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
+        let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun');
+        let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
         
-        let countBaik = 0; let countRusak = 0; let totalJiwa = 0;
-        windowAllReports = data.reverse(); 
+        let lat = getSafeVal(r, 'Latitude', 'Lat'); let lng = getSafeVal(r, 'Longitude', 'Lng');
+        let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
+        
+        let btnDocs = '';
+        if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
+        if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
+        if(btnDocs === '') btnDocs = '-';
 
-        const htmlRows = windowAllReports.map((r, index) => {
-          let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
-          if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) {
-            countBaik++; status = `<span class="badge bg-success">${status}</span>`;
-          } else if (status !== "-") {
-            countRusak++; status = `<span class="badge bg-danger">${status}</span>`;
-          }
+        return `<tr>
+          <td class="ps-3"><small>${dateFormated}</small></td><td>${kec}</td><td class="fw-bold">${desa}</td><td>${spam}</td>
+          <td>${status}</td><td>${tahun}</td><td>${jiwa}</td><td>${petugas}</td><td>${btnDocs}</td>
+          <td><button class="btn btn-sm btn-warning py-0 px-2 text-dark shadow-sm" onclick="editLaporan(${index})"><i class="fas fa-edit"></i> Edit</button></td>
+        </tr>`;
+      }).join('');
 
-          let jiwa = parseInt(getSafeVal(r, 'JumlahJiwa', 'Jiwa')) || 0;
-          totalJiwa += jiwa;
-
-          let tglStr = getSafeVal(r, 'Timestamp', 'Waktu');
-          let dateFormated = tglStr;
-          try { if (tglStr !== "-" && tglStr !== "") { let d = new Date(tglStr); if (!isNaN(d.getTime())) dateFormated = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
-
-          let kec = getSafeVal(r, 'Kecamatan'); let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
-          let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun');
-          let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
-          
-          let lat = getSafeVal(r, 'Latitude', 'Lat'); let lng = getSafeVal(r, 'Longitude', 'Lng');
-          let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
-          
-          let btnDocs = '';
-          if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
-          if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
-          if(btnDocs === '') btnDocs = '-';
-
-          return `<tr>
-            <td class="ps-3"><small>${dateFormated}</small></td><td>${kec}</td><td class="fw-bold">${desa}</td><td>${spam}</td>
-            <td>${status}</td><td>${tahun}</td><td>${jiwa}</td><td>${petugas}</td><td>${btnDocs}</td>
-            <td><button class="btn btn-sm btn-warning py-0 px-2 text-dark shadow-sm" onclick="editLaporan(${index})"><i class="fas fa-edit"></i> Edit</button></td>
-          </tr>`;
-        }).join('');
-
-        document.getElementById('s-total').innerText = data.length;
-        document.getElementById('s-baik').innerText = countBaik;
-        document.getElementById('s-rusak').innerText = countRusak;
-        document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
-        tbody.innerHTML = htmlRows;
-      })
-      .withFailureHandler(err => {
-        setLoader(false); alert("Gagal memuat data: " + err.message);
-      })
-      .getLaporan();
+      document.getElementById('s-total').innerText = data.length;
+      document.getElementById('s-baik').innerText = countBaik;
+      document.getElementById('s-rusak').innerText = countRusak;
+      document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
+      tbody.innerHTML = htmlRows;
+    } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
   }
 
   function editLaporan(index) {
@@ -695,60 +710,55 @@
     showPage('form'); 
   }
 
-  function loadApproval(forceRefresh = false) {
+  async function loadApproval(forceRefresh = false) {
     if(forceRefresh) isApprovalLoaded = false;
     if(isApprovalLoaded) return;
 
     setLoader(true, "Memuat Daftar User...");
-    google.script.run
-      .withSuccessHandler(data => {
-        setLoader(false);
-        isApprovalLoaded = true; 
-        let tb = document.getElementById('t-approval');
-        if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
-        
-        tb.innerHTML = data.map(u => {
-          let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
-          let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
-          let actionBtns = '';
-          if (u.role !== 'admin') {
-            if (u.status === 'Pending') {
-              actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
-            }
-            actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
-          } else {
-             actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
+    try {
+      let res = await fetchAPI('getAllUsers');
+      let data = res.data || [];
+      setLoader(false);
+      isApprovalLoaded = true; 
+      let tb = document.getElementById('t-approval');
+      if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
+      
+      tb.innerHTML = data.map(u => {
+        let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
+        let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
+        let actionBtns = '';
+        if (u.role !== 'admin') {
+          if (u.status === 'Pending') {
+            actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
           }
-          return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
-        }).join('');
-      })
-      .withFailureHandler(err => {
-        setLoader(false); alert("Gagal memuat data: " + err.message);
-      })
-      .getAllUsers();
+          actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
+        } else {
+           actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
+        }
+        return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
+      }).join('');
+    } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
   }
 
-  function accUser(row) {
+  async function accUser(row) {
     setLoader(true, "Menyetujui...");
-    google.script.run
-      .withSuccessHandler(() => { isApprovalLoaded = false; loadApproval(); })
-      .withFailureHandler(err => { setLoader(false); alert("Gagal: " + err.message); })
-      .approveUser(row);
+    try {
+      await fetchAPI('approveUser', { rowIdx: row });
+      isApprovalLoaded = false; loadApproval();
+    } catch(err) { setLoader(false); alert("Gagal: " + err.message); }
   }
 
-  function delUser(row, username) {
+  async function delUser(row, username) {
     if(!confirm(`PERINGATAN: Apakah Anda yakin ingin MENGHAPUS akun '${username}' secara permanen? \nAkun yang dihapus tidak bisa login kembali.`)) return;
     setLoader(true, "Menghapus akun...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success) {
-          alert("Akun berhasil dihapus dari sistem.");
-          isApprovalLoaded = false; loadApproval();
-        } else alert(res.message);
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error: " + err.message); })
-      .deleteUser(row);
+    try {
+      let res = await fetchAPI('deleteUser', { rowIdx: row });
+      setLoader(false);
+      if(res.success) {
+        alert("Akun berhasil dihapus dari sistem.");
+        isApprovalLoaded = false; loadApproval();
+      } else alert(res.message);
+    } catch(err) { setLoader(false); alert("Error: " + err.message); }
   }
 
   function exportExcel() {
