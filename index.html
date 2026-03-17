@@ -19,64 +19,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
- <style>
-      /* Desain UI Asli yang Clean, Rapi, dan Elegan (ANTI-ZOOM & ANTI-GESER) */
+<style>
+      /* Desain UI Asli yang Clean, Rapi, dan Elegan */
       :root { --primary: #2563eb; --bg: #f8fafc; --sidebar: #0f172a; }
-      
-      /* 1. KUNCI LAYAR UTAMA AGAR TIDAK BISA MELAR */
-      body, html { 
-        background: var(--bg); 
-        font-family: 'Segoe UI', sans-serif; 
-        margin: 0; 
-        padding: 0; 
-        width: 100vw; 
-        max-width: 100vw;
-        overflow-x: hidden; /* Mencegah layar tergeser/zoom ke kanan secara global */
-      }
+      body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
       
       #authBox { height: 100vh; display: flex; align-items: center; justify-content: center; background: #2563eb; padding: 20px; }
       
-      .sidebar { 
-        width: 280px; 
-        background: var(--sidebar); 
-        min-height: 100vh; 
-        color: white; 
-        position: fixed; 
-        top: 0;
-        left: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-        z-index: 1050;
-        overflow-y: auto;
-      }
+      .sidebar { width: 280px; left: 0; background: var(--sidebar); min-height: 100vh; color: white; position: fixed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1050; }
+      .main-content { margin-left: 280px; padding: 30px; transition: all 0.3s; }
       
-      /* 2. KUNCI RUANG KONTEN AGAR PAS DENGAN SISA LAYAR */
-      .main-content { 
-        margin-left: 280px; 
-        padding: 30px; 
-        width: calc(100vw - 280px); /* Paksa batas lebar konten */
-        max-width: calc(100vw - 280px); /* Cegah konten melar saat tabel kepanjangan */
-        min-height: 100vh;
-        box-sizing: border-box;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-      }
-      
-      /* 3. KUNCI TABEL AGAR BISA SCROLL DI DALAM KOTAKNYA SENDIRI */
-      .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); width: 100%; max-width: 100%; }
-      .card-body, .table-responsive { 
-        width: 100%; 
-        overflow-x: auto; /* Munculkan scroll ke samping HANYA di dalam area tabel */
-        -webkit-overflow-scrolling: touch;
-      }
-      
-      .table { min-width: 1100px; /* Tabel tetap rapi, kolom tidak saling berdempetan */ margin-bottom: 0; }
-      .table th { background: #1e293b; color: white; font-weight: 500; white-space: nowrap; }
-      .table td { vertical-align: middle; white-space: nowrap; }
-      
-      /* KOMPONEN UI LAINNYA (TETAP SAMA) */
-      .nav-link { color: #cbd5e1; padding: 12px 20px; display: block; text-decoration: none; border-radius: 8px; margin: 4px 15px; transition: 0.2s; white-space: nowrap; }
+      .nav-link { color: #cbd5e1; padding: 12px 20px; display: block; text-decoration: none; border-radius: 8px; margin: 4px 15px; transition: 0.2s; }
       .nav-link:hover, .nav-link.active { background: var(--primary); color: white; }
       .nav-link i { width: 25px; }
       
+      .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
       .btn-primary { background: var(--primary); border: none; padding: 10px 24px; border-radius: 8px; font-weight: 500; }
       .form-control, .form-select { border-radius: 8px; border: 1px solid #e2e8f0; padding: 10px 15px; }
       .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px rgba(37,99,235,0.1); border-color: var(--primary); }
@@ -86,17 +43,10 @@
       .status-sebagian { background: #fef08a; color: #854d0e; }
       .status-rusak { background: #fee2e2; color: #991b1b; }
       
-      /* RESPONSIVE LAYAR HP */
       @media (max-width: 992px) {
         .sidebar { left: -280px; }
         .sidebar.active { left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .main-content { 
-          margin-left: 0; 
-          width: 100vw; 
-          max-width: 100vw; 
-          padding: 15px; 
-        }
-        .header-title { font-size: 1.5rem; }
+        .main-content { margin-left: 0; padding: 15px; }
       }
     </style>
 </head>
