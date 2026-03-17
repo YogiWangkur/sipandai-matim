@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <base target="_top">
+  <!-- PENTING: Mencegah zoom paksa di HP agar terasa seperti aplikasi asli -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SIPANDAI - Kabupaten Manggarai Timur</title>
-  <meta name="description" content="Sistem Informasi Monitoring SPAM Kabupaten Manggarai Timur. Aplikasi pendataan, pelaporan, dan pemantauan infrastruktur air minum.">
-  <meta name="keywords" content="SIPANDAI, Manggarai Timur, SPAM, Air Minum, Pemerintah, Dinas">
-  
-  <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg">
-  <link rel="apple-touch-icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou">
   
   <!-- Frameworks & Libraries Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,36 +14,48 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-<style>
-      /* Desain UI Asli yang Clean, Rapi, dan Elegan */
-      :root { --primary: #2563eb; --bg: #f8fafc; --sidebar: #0f172a; }
-      body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
-      
-      #authBox { height: 100vh; display: flex; align-items: center; justify-content: center; background: #2563eb; padding: 20px; }
-      
-      .sidebar { width: 280px; left: 0; background: var(--sidebar); min-height: 100vh; color: white; position: fixed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1050; }
-      .main-content { margin-left: 280px; padding: 30px; transition: all 0.3s; }
-      
-      .nav-link { color: #cbd5e1; padding: 12px 20px; display: block; text-decoration: none; border-radius: 8px; margin: 4px 15px; transition: 0.2s; }
-      .nav-link:hover, .nav-link.active { background: var(--primary); color: white; }
-      .nav-link i { width: 25px; }
-      
-      .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-      .btn-primary { background: var(--primary); border: none; padding: 10px 24px; border-radius: 8px; font-weight: 500; }
-      .form-control, .form-select { border-radius: 8px; border: 1px solid #e2e8f0; padding: 10px 15px; }
-      .form-control:focus, .form-select:focus { box-shadow: 0 0 0 3px rgba(37,99,235,0.1); border-color: var(--primary); }
-      
-      .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
-      .status-semua { background: #dcfce7; color: #166534; }
-      .status-sebagian { background: #fef08a; color: #854d0e; }
-      .status-rusak { background: #fee2e2; color: #991b1b; }
-      
-      @media (max-width: 992px) {
-        .sidebar { left: -280px; }
-        .sidebar.active { left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-        .main-content { margin-left: 0; padding: 15px; }
-      }
-    </style>
+  <style>
+    /* Desain UI Asli yang Clean, Rapi, dan Elegan */
+    :root { --primary: #2563eb; --bg: #f8fafc; --sidebar: #0f172a; }
+    body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+    
+    #authBox { height: 100vh; display: flex; align-items: center; justify-content: center; background: #2563eb; padding: 20px; }
+    
+    .sidebar { width: 280px; left: 0; background: var(--sidebar); min-height: 100vh; color: white; position: fixed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1050; }
+    .main-content { margin-left: 280px; padding: 30px; transition: all 0.3s; }
+    .mobile-topbar { display: none; background: var(--primary); color: white; padding: 15px 20px; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    .card-custom { background: white; border-radius: 16px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 20px; }
+    .nav-link { color: #94a3b8; padding: 12px 20px; cursor: pointer; border-radius: 12px; margin: 5px 15px; display: flex; align-items: center; text-decoration: none; transition: 0.2s; }
+    .nav-link:hover { background: #1e293b; color: white; }
+    .nav-link.active { background: var(--primary); color: white; }
+    
+    /* Desain Formulir Clean */
+    .form-section { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .form-section-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+    .form-label { font-weight: 600; color: #475569; font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.6rem 1rem; font-size: 0.95rem; background-color: #ffffff; }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15); }
+    
+    .img-box { width: 100%; height: 160px; background: #e2e8f0; border: 2px dashed #94a3b8; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 10px; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    
+    .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+    
+    .table-nowrap th, .table-nowrap td { white-space: nowrap; font-size: 13px; vertical-align: middle; }
+    .table-bordered th, .table-bordered td { border: 1px solid #cbd5e1 !important; }
+    .table-dark th { border-color: #334155 !important; }
+
+    /* PERBAIKAN TAMPILAN HP (MOBILE RESPONSIVE) */
+    @media (max-width: 992px) { 
+      .sidebar { left: -280px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); } 
+      .sidebar.active { left: 0; } 
+      .main-content { margin-left: 0; padding: 15px; } 
+      .mobile-topbar { display: flex; } 
+      .card-custom { padding: 15px; }
+      .form-section { padding: 15px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -61,7 +68,7 @@
 <div id="authBox">
   <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 400px; max-width: 100%;">
     <div class="mb-3">
-      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
+      <img id="login-logo" src="" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
     </div>
     <h3 class="fw-bold m-0">SIPANDAI MATIM</h3>
     <p class="text-muted small mb-4">Sistem Informasi Monitoring SPAM</p>
@@ -98,7 +105,7 @@
         
         <!-- Wadah Logo & Ikon Edit Pensil -->
         <div class="position-relative d-inline-block">
-          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
+          <img id="sidebar-logo" src="" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
           <!-- Ikon Edit Logo Khusus Admin -->
           <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
             <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
@@ -118,11 +125,13 @@
     </div>
 
     <div class="nav flex-column mt-2">
+      <!-- Admin Only -->
       <div id="menu-admin" style="display:none;">
         <div id="n-dash" class="nav-link active" onclick="showPage('dashboard')"><i class="fas fa-chart-pie me-3"></i> Dashboard</div>
         <div id="n-data" class="nav-link" onclick="showPage('data')"><i class="fas fa-table me-3"></i> Riwayat Data</div>
         <div id="n-approval" class="nav-link" onclick="showPage('approval')"><i class="fas fa-users-cog me-3"></i> Manajemen User</div>
       </div>
+      <!-- All Roles -->
       <div id="n-form" class="nav-link" onclick="showPage('form')"><i class="fas fa-edit me-3"></i> Input Laporan</div>
       <div id="n-layanan" class="nav-link" onclick="showPage('layanan')"><i class="fas fa-headset me-3"></i> Menu Layanan</div>
       
@@ -144,6 +153,7 @@
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
       <div class="row g-3">
+        <!-- PERBAIKAN: Kotak disusun 1 kolom di HP (col-12) agar teks tidak terpotong -->
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary mt-2">0</h2></div></div>
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success mt-2">0</h2></div></div>
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger mt-2">0</h2></div></div>
@@ -156,6 +166,7 @@
       <h3 id="form-title" class="fw-bold mb-4">Formulir Database SPAM</h3>
       <div class="card-custom shadow-sm">
         
+        <!-- A. ADMINISTRASI -->
         <div class="form-section shadow-sm">
           <div class="form-section-title"><i class="fas fa-folder-open me-2 text-primary"></i>A. Administrasi</div>
           <div class="row g-3">
@@ -174,13 +185,22 @@
               </select>
             </div>
             <div class="col-md-4"><label class="form-label">6. Desa / Kelurahan</label><input type="text" id="f_desa" class="form-control"></div>
+            
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
-            <input type="hidden" id="f_lat" value="-">
-            <input type="hidden" id="f_lng" value="-">
+            
+            <!-- PERBAIKAN: Tombol GPS dirapikan agar tidak memanjang keluar layar HP -->
+            <div class="col-md-12">
+              <label class="form-label">8 & 9. Titik Koordinat GPS</label>
+              <div class="row g-2">
+                <div class="col-12 col-md-4"><button class="btn btn-dark w-100 shadow-sm" type="button" onclick="getGPS()"><i class="fas fa-map-marker-alt"></i> Ambil Lokasi</button></div>
+                <div class="col-6 col-md-4"><input type="text" id="f_lat" class="form-control shadow-sm" placeholder="Latitude" readonly></div>
+                <div class="col-6 col-md-4"><input type="text" id="f_lng" class="form-control shadow-sm" placeholder="Longitude" readonly></div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- B. KEUANGAN -->
         <div class="form-section shadow-sm">
           <div class="form-section-title"><i class="fas fa-wallet me-2 text-success"></i>B. Keuangan</div>
           <div class="row g-3">
@@ -194,6 +214,7 @@
           </div>
         </div>
 
+        <!-- C. TEKNIS -->
         <div class="form-section shadow-sm">
           <div class="form-section-title"><i class="fas fa-cogs me-2 text-warning"></i>C. Teknis</div>
           <div class="row g-3">
@@ -202,7 +223,7 @@
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
             <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
-          <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option><option>Gabungan</option></select></div>
+            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option></select></div>
             <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
             
             <div class="col-md-3"><label class="form-label">7. Kapasitas Terpasang (l/dtk)</label><input type="number" step="0.01" id="f_kapTerpasang" class="form-control"></div>
@@ -219,13 +240,14 @@
             <div class="col-md-3"><label class="form-label">15. Jml Tenaga Non-Teknis</label><input type="number" id="f_tNonTeknis" class="form-control"></div>
 
             <div class="col-12 mt-3">
-              <label class="form-label text-danger">13. Upload Foto Kerusakan</label>
+              <label class="form-label text-danger">13. Upload Foto Kerusakan (Jika status Sebagian / Tidak Berfungsi)</label>
               <input type="file" class="form-control" accept="image/*" onchange="preview(this, 'v-rusak')">
               <div class="img-box shadow-sm" style="max-width: 100%;"><img id="v-rusak"></div>
             </div>
           </div>
         </div>
 
+        <!-- D. LAYANAN -->
         <div class="form-section shadow-sm">
           <div class="form-section-title"><i class="fas fa-hand-holding-water me-2 text-info"></i>D. Layanan (Penerima Manfaat)</div>
           <div class="row g-3">
@@ -241,7 +263,7 @@
       </div>
     </div>
 
-    <!-- PAGE: RIWAYAT DATA -->
+    <!-- PAGE: RIWAYAT DATA (ADMIN) -->
     <div id="page-data" style="display:none">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0">Riwayat Laporan Masuk</h3>
@@ -256,7 +278,16 @@
           <table class="table table-hover table-bordered align-middle m-0 table-nowrap" id="dataTable">
             <thead class="table-dark">
               <tr>
-                <th class="ps-3">Tanggal</th><th>Kecamatan</th><th>Desa</th><th>Unit SPAM</th><th>Status</th><th>Tahun</th><th>Jml Jiwa</th><th>Petugas</th><th>Foto/GPS</th><th>Aksi</th>
+                <th class="ps-3">Tanggal</th>
+                <th>Kecamatan</th>
+                <th>Desa</th>
+                <th>Unit SPAM</th>
+                <th>Status</th>
+                <th>Tahun</th>
+                <th>Jml Jiwa</th>
+                <th>Petugas</th>
+                <th>Foto/GPS</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody id="t-body">
@@ -267,7 +298,7 @@
       </div>
     </div>
 
-    <!-- PAGE: MANAJEMEN USER -->
+    <!-- PAGE: MANAJEMEN USER & APPROVAL (ADMIN) -->
     <div id="page-approval" style="display:none">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0">Manajemen & Persetujuan Akun</h3>
@@ -277,7 +308,12 @@
         <div class="table-responsive" style="overflow-x: auto;">
           <table class="table table-hover table-bordered align-middle m-0 table-nowrap">
             <thead class="table-light">
-              <tr><th class="ps-4">Username</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
+              <tr>
+                <th class="ps-4">Username</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
             </thead>
             <tbody id="t-approval">
               <tr><td colspan="4" class="text-center p-4 text-muted">Memuat daftar user...</td></tr>
@@ -287,7 +323,7 @@
       </div>
     </div>
 
-    <!-- PAGE: LAYANAN -->
+    <!-- PAGE: LAYANAN (ALL) -->
     <div id="page-layanan" style="display:none">
       <h3 class="fw-bold mb-4">Pusat Layanan & Bantuan</h3>
       <div class="row g-4">
@@ -322,45 +358,20 @@
 </div>
 
 <script>
-  // =========================================================================
-  // SISTEM API MODERN (VERCEL READY)
-  // =========================================================================
-  
-  // NANTI KITA ISI LINK INI SETELAH CODE.GS DIPERBARUI. SEMENTARA BIARKAN KOSONG DULU.
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec"; 
-
-  async function fetchAPI(action, payload = {}) {
-    if (!SCRIPT_URL || SCRIPT_URL === "") {
-        console.warn("SCRIPT_URL belum diisi. Aplikasi menunggu koneksi Backend.");
-        return { success: false, message: "Sistem sedang dalam proses pembaruan server." };
-    }
-    try {
-      const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: action, payload: payload })
-      });
-      return await response.json();
-    } catch (error) {
-      console.error("Fetch error:", error);
-      throw new Error("Gagal terhubung ke server database.");
-    }
-  }
-
   let currentUser = "";
   let currentUserRole = "";
   let windowAllReports = []; 
   let windowEditRowIdx = null; 
   let fotoBase64 = "";
+
   let isDataLoaded = false;
   let isApprovalLoaded = false;
 
   window.onload = function() {
-    if(SCRIPT_URL === "") return; // Tunggu koneksi backend
-    fetchAPI('getAppLogo')
-      .then(res => {
-        if(res.success && res.url && res.url.length > 5) {
-          let finalUrl = res.url;
+    google.script.run
+      .withSuccessHandler(function(url) {
+        if(url && url.length > 5) {
+          let finalUrl = url;
           if (finalUrl.includes("id=")) {
             let fileId = finalUrl.split("id=")[1].split("&")[0];
             finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
@@ -368,10 +379,16 @@
           document.getElementById('login-logo').src = finalUrl;
           document.getElementById('sidebar-logo').src = finalUrl;
         }
-      }).catch(err => console.log(err));
+      })
+      .withFailureHandler(function(err) {
+        console.log("Gagal memuat logo: " + err);
+      })
+      .getAppLogo();
   };
 
-  function changeLogoUrl() { document.getElementById('logo-upload').click(); }
+  function changeLogoUrl() {
+    document.getElementById('logo-upload').click();
+  }
 
   function handleLogoUpload(input) {
     if(input.files && input.files[0]) {
@@ -382,13 +399,19 @@
         document.getElementById('sidebar-logo').src = base64;
         
         setLoader(true, "Mengunggah Logo ke Server...");
-        fetchAPI('uploadAppLogo', { base64Str: base64 })
-          .then(res => {
+        google.script.run
+          .withSuccessHandler(res => {
             setLoader(false);
-            if(res.success) alert(res.message);
-            else alert("Gagal memperbarui logo: " + res.message);
+            if(res.success) {
+              alert(res.message);
+            } else {
+              alert("Gagal memperbarui logo: " + res.message);
+            }
           })
-          .catch(err => { setLoader(false); alert("Error menyimpan logo: " + err.message); });
+          .withFailureHandler(err => {
+            setLoader(false); alert("Error menyimpan logo: " + err.message);
+          })
+          .uploadAppLogo(base64);
       };
       reader.readAsDataURL(input.files[0]);
     }
@@ -422,26 +445,23 @@
     const p = document.getElementById('r-pass').value;
     if(!u || !p) return alert("Isi username dan password");
     setLoader(true, "Mendaftarkan Akun...");
-    
-    fetchAPI('registerUser', { u: u, p: p })
-      .then(res => {
+    google.script.run
+      .withSuccessHandler(res => {
         setLoader(false);
         alert(res.message);
         if(res.success) toggleAuth('login');
       })
-      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); })
+      .registerUser(u, p);
   }
 
   function doLogin(){
     const u = document.getElementById('l-user').value;
     const p = document.getElementById('l-pass').value;
     if(!u || !p) return alert("Harap isi username dan password");
-    
-    if(SCRIPT_URL === "") return alert("Sistem sedang disiapkan untuk server baru (Vercel). Hubungi Admin.");
-
     setLoader(true, "Verifikasi...");
-    fetchAPI('loginUser', { u: u, p: p })
-      .then(res => {
+    google.script.run
+      .withSuccessHandler(res => {
         setLoader(false);
         if(res.success){
           currentUser = res.username;
@@ -463,7 +483,8 @@
           document.getElementById('mainApp').style.display = 'block';
         } else { alert(res.message); }
       })
-      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); })
+      .loginUser(u, p);
   }
 
   function showPage(pageId){
@@ -507,6 +528,14 @@
     }
   }
 
+  function getInputValue(ids) {
+    for (let id of ids) {
+      let el = document.getElementById(id);
+      if (el && el.value) return el.value;
+    }
+    return "";
+  }
+
   function submitData(){
     const data = {
       rowIdx: windowEditRowIdx,
@@ -548,9 +577,8 @@
 
     setLoader(true, "Menyimpan Database...");
     
-    let actionAPI = data.rowIdx ? 'updateLaporan' : 'simpanLaporan';
-    fetchAPI(actionAPI, { obj: data })
-      .then(res => {
+    let serverCall = google.script.run
+      .withSuccessHandler(res => {
         setLoader(false);
         if(res.success){
           alert("Berhasil! Database tersimpan.");
@@ -560,7 +588,10 @@
           else showPage('form');
         } else { alert("Gagal: " + res.message); }
       })
-      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+
+    if (data.rowIdx) serverCall.updateLaporan(data);
+    else serverCall.simpanLaporan(data);
   }
 
   function clearForm(){
@@ -577,14 +608,12 @@
     if(isDataLoaded) return;
 
     setLoader(true, "Menarik Data...");
-    fetchAPI('getLaporan')
-      .then(res => {
+    google.script.run
+      .withSuccessHandler(data => {
         setLoader(false);
         isDataLoaded = true; 
         const tbody = document.getElementById('t-body');
-        let data = res.data || [];
-        
-        if(data.length === 0) {
+        if(!data || data.length === 0) {
           document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
           document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
           tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; return;
@@ -633,9 +662,10 @@
         document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
         tbody.innerHTML = htmlRows;
       })
-      .catch(err => {
+      .withFailureHandler(err => {
         setLoader(false); alert("Gagal memuat data: " + err.message);
-      });
+      })
+      .getLaporan();
   }
 
   function editLaporan(index) {
@@ -670,13 +700,12 @@
     if(isApprovalLoaded) return;
 
     setLoader(true, "Memuat Daftar User...");
-    fetchAPI('getAllUsers')
-      .then(res => {
+    google.script.run
+      .withSuccessHandler(data => {
         setLoader(false);
         isApprovalLoaded = true; 
         let tb = document.getElementById('t-approval');
-        let data = res.data || [];
-        if(data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
+        if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
         
         tb.innerHTML = data.map(u => {
           let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
@@ -693,28 +722,33 @@
           return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
         }).join('');
       })
-      .catch(err => { setLoader(false); alert("Gagal memuat data: " + err.message); });
+      .withFailureHandler(err => {
+        setLoader(false); alert("Gagal memuat data: " + err.message);
+      })
+      .getAllUsers();
   }
 
   function accUser(row) {
     setLoader(true, "Menyetujui...");
-    fetchAPI('approveUser', { rowIdx: row })
-      .then(() => { isApprovalLoaded = false; loadApproval(); })
-      .catch(err => { setLoader(false); alert("Gagal: " + err.message); });
+    google.script.run
+      .withSuccessHandler(() => { isApprovalLoaded = false; loadApproval(); })
+      .withFailureHandler(err => { setLoader(false); alert("Gagal: " + err.message); })
+      .approveUser(row);
   }
 
   function delUser(row, username) {
     if(!confirm(`PERINGATAN: Apakah Anda yakin ingin MENGHAPUS akun '${username}' secara permanen? \nAkun yang dihapus tidak bisa login kembali.`)) return;
     setLoader(true, "Menghapus akun...");
-    fetchAPI('deleteUser', { rowIdx: row })
-      .then(res => {
+    google.script.run
+      .withSuccessHandler(res => {
         setLoader(false);
         if(res.success) {
           alert("Akun berhasil dihapus dari sistem.");
           isApprovalLoaded = false; loadApproval();
         } else alert(res.message);
       })
-      .catch(err => { setLoader(false); alert("Error: " + err.message); });
+      .withFailureHandler(err => { setLoader(false); alert("Error: " + err.message); })
+      .deleteUser(row);
   }
 
   function exportExcel() {
