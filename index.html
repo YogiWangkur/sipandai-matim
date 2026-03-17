@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SIPANDAI MATIM</title>
+  
+  <!-- Frameworks & Libraries Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- Libraries untuk Export Excel & PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    /* Desain UI Asli yang Clean, Rapi, dan Elegan */
+    :root { --primary: #2563eb; --bg: #f8fafc; --sidebar: #0f172a; }
+    body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+    
+    #authBox { height: 100vh; display: flex; align-items: center; justify-content: center; background: #2563eb; padding: 20px; }
+    
+    .sidebar { width: 280px; left: 0; background: var(--sidebar); min-height: 100vh; color: white; position: fixed; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1050; }
+    .main-content { margin-left: 280px; padding: 30px; transition: all 0.3s; }
+    .mobile-topbar { display: none; background: var(--primary); color: white; padding: 15px 20px; align-items: center; justify-content: space-between; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    .card-custom { background: white; border-radius: 16px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 20px; }
+    .nav-link { color: #94a3b8; padding: 12px 20px; cursor: pointer; border-radius: 12px; margin: 5px 15px; display: flex; align-items: center; text-decoration: none; transition: 0.2s; }
+    .nav-link:hover { background: #1e293b; color: white; }
+    .nav-link.active { background: var(--primary); color: white; }
+    
+    /* Desain Formulir Clean */
+    .form-section { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .form-section-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+    .form-label { font-weight: 600; color: #475569; font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; padding: 0.6rem 1rem; font-size: 0.95rem; background-color: #ffffff; }
+    .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15); }
+    
+    .img-box { width: 100%; height: 160px; background: #e2e8f0; border: 2px dashed #94a3b8; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 10px; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    
+    .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+    
+    .table-nowrap th, .table-nowrap td { white-space: nowrap; font-size: 13px; vertical-align: middle; }
+    .table-bordered th, .table-bordered td { border: 1px solid #cbd5e1 !important; }
+    .table-dark th { border-color: #334155 !important; }
+
+    /* PERBAIKAN TAMPILAN HP (MOBILE RESPONSIVE) */
+    @media (max-width: 992px) { 
+      .sidebar { left: -280px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); } 
+      .sidebar.active { left: 0; } 
+      .main-content { margin-left: 0; padding: 15px; } 
+      .mobile-topbar { display: flex; } 
+      .card-custom { padding: 15px; }
+      .form-section { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loader" class="loader">
+  <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;"></div>
+  <div class="fw-bold text-primary" id="loader-text">Memproses Data...</div>
+</div>
+
+<!-- AUTH SECTION (LOGIN & DAFTAR) -->
+<div id="authBox">
+  <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 400px; max-width: 100%;">
+    <div class="mb-3">
+      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
+    </div>
+    <h3 class="fw-bold m-0">SIPANDAI MATIM</h3>
+    <p class="text-muted small mb-4">Sistem Informasi Monitoring SPAM</p>
+    
+    <!-- Form Login -->
+    <div id="form-login" class="text-start">
+      <label class="small fw-bold mb-1">Username</label>
+      <input type="text" id="l-user" class="form-control mb-3" placeholder="Masukkan username">
+      <label class="small fw-bold mb-1">Password</label>
+      <input type="password" id="l-pass" class="form-control mb-4" placeholder="Masukkan password">
+      <button type="button" class="btn btn-primary w-100 py-2 fw-bold mb-3" onclick="doLogin()">MASUK</button>
+      <div class="text-center small">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-decoration-none fw-bold">Daftar di sini</a></div>
+    </div>
+
+    <!-- Form Register -->
+    <div id="form-register" class="text-start" style="display:none;">
+      <div class="alert alert-info py-2 small"><i class="fas fa-info-circle"></i> Akun butuh persetujuan Admin sebelum bisa login.</div>
+      <label class="small fw-bold mb-1">Buat Username</label>
+      <input type="text" id="r-user" class="form-control mb-3" placeholder="Username baru">
+      <label class="small fw-bold mb-1">Buat Password</label>
+      <input type="password" id="r-pass" class="form-control mb-4" placeholder="Password baru">
+      <button type="button" class="btn btn-success w-100 py-2 fw-bold mb-3" onclick="doRegister()">DAFTAR AKUN</button>
+      <div class="text-center small">Sudah punya akun? <a href="javascript:void(0)" onclick="toggleAuth('login')" class="text-decoration-none fw-bold">Login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="p-4 border-bottom border-secondary mb-3 d-flex justify-content-between align-items-center">
+      <div class="w-100 text-center">
+        
+        <!-- Wadah Logo & Ikon Edit Pensil -->
+        <div class="position-relative d-inline-block">
+          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
+          <!-- Ikon Edit Logo Khusus Admin -->
+          <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
+            <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
+          </button>
+        </div>
+
+        <h4 class="fw-bold m-0 text-white">SIPANDAI</h4>
+        <small class="text-info">Manggarai Timur</small>
+      </div>
+      <button class="btn text-white d-lg-none position-absolute" style="right: 15px; top: 15px;" onclick="toggleSidebar()"><i class="fas fa-times fa-lg"></i></button>
+    </div>
+    
+    <input type="file" id="logo-upload" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+
+    <div class="px-4 pb-2 text-center">
+      <span id="sidebar-role" class="badge bg-warning text-dark px-3 py-1 text-uppercase fw-bold shadow-sm"></span>
+    </div>
+
+    <div class="nav flex-column mt-2">
+      <div id="menu-admin" style="display:none;">
+        <div id="n-dash" class="nav-link active" onclick="showPage('dashboard')"><i class="fas fa-chart-pie me-3"></i> Dashboard</div>
+        <div id="n-data" class="nav-link" onclick="showPage('data')"><i class="fas fa-table me-3"></i> Riwayat Data</div>
+        <div id="n-approval" class="nav-link" onclick="showPage('approval')"><i class="fas fa-users-cog me-3"></i> Manajemen User</div>
+      </div>
+      <div id="n-form" class="nav-link" onclick="showPage('form')"><i class="fas fa-edit me-3"></i> Input Laporan</div>
+      <div id="n-layanan" class="nav-link" onclick="showPage('layanan')"><i class="fas fa-headset me-3"></i> Menu Layanan</div>
+      
+      <hr class="mx-3 opacity-25 text-white">
+      <div class="nav-link text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-3"></i> Keluar</div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="mobile-topbar">
+      <h5 class="m-0 fw-bold"><i class="fas fa-tint me-2"></i> SIPANDAI MATIM</h5>
+      <button class="btn text-white p-0 border-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-2x"></i></button>
+    </div>
+
+    <!-- PAGE: DASHBOARD (ADMIN) -->
+    <div id="page-dashboard">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 class="fw-bold m-0">Dashboard Ringkasan</h3>
+        <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary mt-2">0</h2></div></div>
+        <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success mt-2">0</h2></div></div>
+        <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger mt-2">0</h2></div></div>
+        <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning mt-2">0</h2></div></div>
+      </div>
+    </div>
+
+    <!-- PAGE: FORM INPUT -->
+    <div id="page-form" style="display:none">
+      <h3 id="form-title" class="fw-bold mb-4">Formulir Database SPAM</h3>
+      <div class="card-custom shadow-sm">
+        
+        <div class="form-section shadow-sm">
+          <div class="form-section-title"><i class="fas fa-folder-open me-2 text-primary"></i>A. Administrasi</div>
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">1. Nama Unit SPAM</label><input type="text" id="f_unitSpam" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">2. Nama Kepala Unit</label><input type="text" id="f_kepalaUnit" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">3. Satker Pelaksana</label><input type="text" id="f_satker" class="form-control"></div>
+            
+            <div class="col-md-4"><label class="form-label">4. Kabupaten</label><input type="text" id="f_kabupaten" class="form-control" value="Manggarai Timur" readonly></div>
+            <div class="col-md-4">
+              <label class="form-label">5. Kecamatan</label>
+              <select id="f_kecamatan" class="form-select">
+                <option value="">-- Pilih Kecamatan --</option>
+                <option>Borong</option><option>Rana Mese</option><option>Lamba Leda Selatan</option><option>Lamba Leda</option>
+                <option>Lamba Leda Utara</option><option>Lamba Leda Timur</option><option>Congkar</option><option>Sambi Rampas</option>
+                <option>Elar</option><option>Elar Selatan</option><option>Kota Komba Utara</option><option>Kota Komba</option>
+              </select>
+            </div>
+            <div class="col-md-4"><label class="form-label">6. Desa / Kelurahan</label><input type="text" id="f_desa" class="form-control"></div>
+            <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
+            <div class="col-md-12">
+              <label class="form-label">8 & 9. Titik Koordinat GPS</label>
+              <div class="row g-2">
+                <div class="col-12 col-md-4"><button class="btn btn-dark w-100 shadow-sm" type="button" onclick="getGPS()"><i class="fas fa-map-marker-alt"></i> Ambil Lokasi</button></div>
+                <div class="col-6 col-md-4"><input type="text" id="f_lat" class="form-control shadow-sm" placeholder="Latitude" readonly></div>
+                <div class="col-6 col-md-4"><input type="text" id="f_lng" class="form-control shadow-sm" placeholder="Longitude" readonly></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section shadow-sm">
+          <div class="form-section-title"><i class="fas fa-wallet me-2 text-success"></i>B. Keuangan</div>
+          <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">1. Tahun Pembangunan</label><input type="number" id="f_tahun" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label">2. Biaya Pembangunan (Rp)</label><input type="number" id="f_biaya" class="form-control"></div>
+            <div class="col-md-3">
+              <label class="form-label">3. Sumber Dana</label>
+              <select id="f_dana" class="form-select"><option value="">-- Pilih --</option><option>APBN</option><option>DAK</option><option>PAMSIMAS</option><option>APBD</option><option>LAINNYA</option></select>
+            </div>
+            <div class="col-md-3"><label class="form-label">4. Nilai Asset (Rp)</label><input type="number" id="f_asset" class="form-control"></div>
+          </div>
+        </div>
+
+        <div class="form-section shadow-sm">
+          <div class="form-section-title"><i class="fas fa-cogs me-2 text-warning"></i>C. Teknis</div>
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">1. Sumber Air Baku</label><input type="text" id="f_sumberAir" class="form-control"></div>
+            <div class="col-md-6"><label class="form-label">2. Debit Air Baku (l/detik)</label><input type="number" step="0.01" id="f_debitAir" class="form-control"></div>
+            
+            <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
+            <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
+            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option></select></div>
+            <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
+            
+            <div class="col-md-3"><label class="form-label">7. Kapasitas Terpasang (l/dtk)</label><input type="number" step="0.01" id="f_kapTerpasang" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label">8. Kapasitas Produksi (l/dtk)</label><input type="number" step="0.01" id="f_kapProduksi" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label">9. Kapasitas Distribusi (l/dtk)</label><input type="number" step="0.01" id="f_kapDistribusi" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label">10. Air Terjual (l/dtk)</label><input type="number" step="0.01" id="f_kapTerjual" class="form-control"></div>
+            
+            <div class="col-md-3"><label class="form-label">11. Jam Operasional (Jam/Hari)</label><input type="number" id="f_jamOp" class="form-control"></div>
+            <div class="col-md-3">
+              <label class="form-label">12. Status Keberfungsian</label>
+              <select id="f_status" class="form-select border-primary shadow-sm"><option>Semua</option><option>Sebagian</option><option>Tidak Berfungsi</option></select>
+            </div>
+            <div class="col-md-3"><label class="form-label">14. Jml Tenaga Teknis</label><input type="number" id="f_tTeknis" class="form-control"></div>
+            <div class="col-md-3"><label class="form-label">15. Jml Tenaga Non-Teknis</label><input type="number" id="f_tNonTeknis" class="form-control"></div>
+
+            <div class="col-12 mt-3">
+              <label class="form-label text-danger">13. Upload Foto Kerusakan</label>
+              <input type="file" class="form-control" accept="image/*" onchange="preview(this, 'v-rusak')">
+              <div class="img-box shadow-sm" style="max-width: 100%;"><img id="v-rusak"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section shadow-sm">
+          <div class="form-section-title"><i class="fas fa-hand-holding-water me-2 text-info"></i>D. Layanan (Penerima Manfaat)</div>
+          <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">1. Jumlah Kepala Keluarga (KK)</label><input type="number" id="f_kk" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">2. Jumlah Jiwa</label><input type="number" id="f_jiwa" class="form-control"></div>
+            <div class="col-md-4"><label class="form-label">3. Jumlah Sambungan Rumah (SR)</label><input type="number" id="f_sr" class="form-control"></div>
+          </div>
+        </div>
+
+        <button id="btnSubmit" type="button" class="btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow" style="font-size: 1.1rem;" onclick="submitData()">
+          <i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE
+        </button>
+      </div>
+    </div>
+
+    <!-- PAGE: RIWAYAT DATA -->
+    <div id="page-data" style="display:none">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 class="fw-bold m-0">Riwayat Laporan Masuk</h3>
+        <div>
+          <button class="btn btn-sm btn-success me-1 shadow-sm" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+          <button class="btn btn-sm btn-danger me-1 shadow-sm" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+          <button class="btn btn-sm btn-outline-primary shadow-sm" onclick="loadDashboardData(true)"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+      </div>
+      <div class="card-custom p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="table table-hover table-bordered align-middle m-0 table-nowrap" id="dataTable">
+            <thead class="table-dark">
+              <tr>
+                <th class="ps-3">Tanggal</th><th>Kecamatan</th><th>Desa</th><th>Unit SPAM</th><th>Status</th><th>Tahun</th><th>Jml Jiwa</th><th>Petugas</th><th>Foto/GPS</th><th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="t-body">
+              <tr><td colspan="10" class="text-center p-4 text-muted">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: MANAJEMEN USER -->
+    <div id="page-approval" style="display:none">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 class="fw-bold m-0">Manajemen & Persetujuan Akun</h3>
+        <button class="btn btn-sm btn-outline-primary shadow-sm" onclick="loadApproval(true)"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
+      <div class="card-custom p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table class="table table-hover table-bordered align-middle m-0 table-nowrap">
+            <thead class="table-light">
+              <tr><th class="ps-4">Username</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="t-approval">
+              <tr><td colspan="4" class="text-center p-4 text-muted">Memuat daftar user...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: LAYANAN -->
+    <div id="page-layanan" style="display:none">
+      <h3 class="fw-bold mb-4">Pusat Layanan & Bantuan</h3>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card-custom text-center h-100 shadow-sm border-top border-primary border-4">
+            <i class="fas fa-book fa-3x text-primary mb-3 mt-2"></i>
+            <h5 class="fw-bold">Buku Panduan</h5>
+            <p class="text-muted small">Unduh panduan lengkap pengisian database.</p>
+            <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="alert('File PDF Buku Panduan akan tersedia segera.')"><i class="fas fa-download"></i> Download PDF</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-custom text-center h-100 shadow-sm border-top border-danger border-4">
+            <i class="fab fa-youtube fa-3x text-danger mb-3 mt-2"></i>
+            <h5 class="fw-bold">Video Tutorial</h5>
+            <p class="text-muted small">Tonton cara menggunakan aplikasi SIPANDAI.</p>
+            <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="alert('Video panduan sedang dalam proses editing.')"><i class="fas fa-play"></i> Tonton Video</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-custom text-center h-100 shadow-sm border-top border-success border-4">
+            <i class="fas fa-headset fa-3x text-success mb-3 mt-2"></i>
+            <h5 class="fw-bold">Contact Person</h5>
+            <p class="text-muted small">Hubungi Admin jika ada masalah teknis.</p>
+            <a href="https://wa.me/6281236588024" target="_blank" class="btn btn-success btn-sm rounded-pill mt-2"><i class="fab fa-whatsapp"></i> Chat Admin</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // =========================================================================
+  // SISTEM API MODERN (VERCEL READY)
+  // =========================================================================
+  
+  // NANTI KITA ISI LINK INI SETELAH CODE.GS DIPERBARUI. SEMENTARA BIARKAN KOSONG DULU.
+  const SCRIPT_URL = ""; 
+
+  async function fetchAPI(action, payload = {}) {
+    if (!SCRIPT_URL || SCRIPT_URL === "") {
+        console.warn("SCRIPT_URL belum diisi. Aplikasi menunggu koneksi Backend.");
+        return { success: false, message: "Sistem sedang dalam proses pembaruan server." };
+    }
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, payload: payload })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw new Error("Gagal terhubung ke server database.");
+    }
+  }
+
+  let currentUser = "";
+  let currentUserRole = "";
+  let windowAllReports = []; 
+  let windowEditRowIdx = null; 
+  let fotoBase64 = "";
+  let isDataLoaded = false;
+  let isApprovalLoaded = false;
+
+  window.onload = function() {
+    if(SCRIPT_URL === "") return; // Tunggu koneksi backend
+    fetchAPI('getAppLogo')
+      .then(res => {
+        if(res.success && res.url && res.url.length > 5) {
+          let finalUrl = res.url;
+          if (finalUrl.includes("id=")) {
+            let fileId = finalUrl.split("id=")[1].split("&")[0];
+            finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
+          }
+          document.getElementById('login-logo').src = finalUrl;
+          document.getElementById('sidebar-logo').src = finalUrl;
+        }
+      }).catch(err => console.log(err));
+  };
+
+  function changeLogoUrl() { document.getElementById('logo-upload').click(); }
+
+  function handleLogoUpload(input) {
+    if(input.files && input.files[0]) {
+      let reader = new FileReader();
+      reader.onload = e => {
+        let base64 = e.target.result;
+        document.getElementById('login-logo').src = base64;
+        document.getElementById('sidebar-logo').src = base64;
+        
+        setLoader(true, "Mengunggah Logo ke Server...");
+        fetchAPI('uploadAppLogo', { base64Str: base64 })
+          .then(res => {
+            setLoader(false);
+            if(res.success) alert(res.message);
+            else alert("Gagal memperbarui logo: " + res.message);
+          })
+          .catch(err => { setLoader(false); alert("Error menyimpan logo: " + err.message); });
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+    input.value = '';
+  }
+
+  function setLoader(show, text="Memproses Data..."){ 
+    document.getElementById('loader-text').innerText = text;
+    document.getElementById('loader').style.display = show ? 'flex' : 'none'; 
+  }
+  function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); }
+  function toggleAuth(type) {
+    document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
+    document.getElementById('form-register').style.display = type === 'register' ? 'block' : 'none';
+  }
+
+  function getSafeVal(obj, ...keys) {
+    if (!obj) return "-";
+    for (let key of keys) {
+      const normalizedSearch = key.toLowerCase().replace(/[\s_]/g, '');
+      for (let k in obj) {
+        if (k.toLowerCase().replace(/[\s_]/g, '') === normalizedSearch) {
+           if (obj[k] !== undefined && obj[k] !== "") return obj[k];
+        }
+      }
+    } return "-";
+  }
+
+  function doRegister() {
+    const u = document.getElementById('r-user').value;
+    const p = document.getElementById('r-pass').value;
+    if(!u || !p) return alert("Isi username dan password");
+    setLoader(true, "Mendaftarkan Akun...");
+    
+    fetchAPI('registerUser', { u: u, p: p })
+      .then(res => {
+        setLoader(false);
+        alert(res.message);
+        if(res.success) toggleAuth('login');
+      })
+      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+  }
+
+  function doLogin(){
+    const u = document.getElementById('l-user').value;
+    const p = document.getElementById('l-pass').value;
+    if(!u || !p) return alert("Harap isi username dan password");
+    
+    if(SCRIPT_URL === "") return alert("Sistem sedang disiapkan untuk server baru (Vercel). Hubungi Admin.");
+
+    setLoader(true, "Verifikasi...");
+    fetchAPI('loginUser', { u: u, p: p })
+      .then(res => {
+        setLoader(false);
+        if(res.success){
+          currentUser = res.username;
+          currentUserRole = (res.role || "petugas").toLowerCase(); 
+          
+          document.getElementById('displayUser').innerText = `User: ${res.username}`;
+          document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
+          
+          if (currentUserRole === 'admin') {
+             document.getElementById('menu-admin').style.display = 'block'; 
+             document.getElementById('btn-edit-logo').style.display = 'block'; 
+             showPage('dashboard');
+          } else {
+             document.getElementById('menu-admin').style.display = 'none'; 
+             document.getElementById('btn-edit-logo').style.display = 'none'; 
+             showPage('form');
+          }
+          document.getElementById('authBox').style.display = 'none';
+          document.getElementById('mainApp').style.display = 'block';
+        } else { alert(res.message); }
+      })
+      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+  }
+
+  function showPage(pageId){
+    if ((pageId === 'data' || pageId === 'dashboard' || pageId === 'approval') && currentUserRole !== 'admin') {
+      return alert("Akses Ditolak! Menu ini khusus Administrator.");
+    }
+    if(pageId === 'form' && windowEditRowIdx === null) clearForm();
+
+    document.querySelectorAll('div[id^="page"]').forEach(div => div.style.display = 'none');
+    document.getElementById('page-' + pageId).style.display = 'block';
+    
+    document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+    document.getElementById('n-' + pageId)?.classList.add('active');
+    
+    if(window.innerWidth <= 992) document.querySelector('.sidebar').classList.remove('active');
+    
+    if((pageId === 'dashboard' || pageId === 'data') && !isDataLoaded) loadDashboardData();
+    if(pageId === 'approval' && !isApprovalLoaded) loadApproval();
+  }
+
+  function getGPS(){
+    setLoader(true, "Mencari Satelit GPS...");
+    navigator.geolocation.getCurrentPosition(pos => {
+      setLoader(false);
+      document.getElementById('f_lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('f_lng').value = pos.coords.longitude.toFixed(6);
+    }, (err) => {
+      setLoader(false); alert("GPS Gagal. Pastikan izin lokasi aktif di browser/HP Anda.");
+    }, { enableHighAccuracy: true });
+  }
+
+  function preview(input, targetId){
+    if(input.files && input.files[0]){
+      let r = new FileReader();
+      r.onload = e => {
+        document.getElementById(targetId).src = e.target.result;
+        document.getElementById(targetId).style.display = 'block';
+        fotoBase64 = e.target.result;
+      };
+      r.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function submitData(){
+    const data = {
+      rowIdx: windowEditRowIdx,
+      f_unitSpam: document.getElementById('f_unitSpam').value,
+      f_kepalaUnit: document.getElementById('f_kepalaUnit').value,
+      f_satker: document.getElementById('f_satker').value,
+      f_kabupaten: document.getElementById('f_kabupaten').value,
+      f_kecamatan: document.getElementById('f_kecamatan').value,
+      f_desa: document.getElementById('f_desa').value,
+      f_alamat: document.getElementById('f_alamat').value,
+      f_lat: document.getElementById('f_lat').value,
+      f_lng: document.getElementById('f_lng').value,
+      f_tahun: document.getElementById('f_tahun').value,
+      f_biaya: document.getElementById('f_biaya').value,
+      f_dana: document.getElementById('f_dana').value,
+      f_asset: document.getElementById('f_asset').value,
+      f_sumberAir: document.getElementById('f_sumberAir').value,
+      f_debitAir: document.getElementById('f_debitAir').value,
+      f_sistemProd: document.getElementById('f_sistemProd').value,
+      f_reservoir: document.getElementById('f_reservoir').value,
+      f_aliran: document.getElementById('f_aliran').value,
+      f_listrik: document.getElementById('f_listrik').value,
+      f_kapTerpasang: document.getElementById('f_kapTerpasang').value,
+      f_kapProduksi: document.getElementById('f_kapProduksi').value,
+      f_kapDistribusi: document.getElementById('f_kapDistribusi').value,
+      f_kapTerjual: document.getElementById('f_kapTerjual').value,
+      f_jamOp: document.getElementById('f_jamOp').value,
+      f_status: document.getElementById('f_status').value,
+      f_tTeknis: document.getElementById('f_tTeknis').value,
+      f_tNonTeknis: document.getElementById('f_tNonTeknis').value,
+      f_kk: document.getElementById('f_kk').value,
+      f_jiwa: document.getElementById('f_jiwa').value,
+      f_sr: document.getElementById('f_sr').value,
+      petugas: currentUser, 
+      fotoRusak: fotoBase64
+    };
+
+    if(!data.f_unitSpam || !data.f_desa) return alert("Nama Unit SPAM dan Desa Wajib Diisi!");
+
+    setLoader(true, "Menyimpan Database...");
+    
+    let actionAPI = data.rowIdx ? 'updateLaporan' : 'simpanLaporan';
+    fetchAPI(actionAPI, { obj: data })
+      .then(res => {
+        setLoader(false);
+        if(res.success){
+          alert("Berhasil! Database tersimpan.");
+          clearForm();
+          isDataLoaded = false; 
+          if (currentUserRole === 'admin') showPage('data');
+          else showPage('form');
+        } else { alert("Gagal: " + res.message); }
+      })
+      .catch(err => { setLoader(false); alert("Error Sistem: " + err.message); });
+  }
+
+  function clearForm(){
+    document.querySelectorAll('#page-form input:not([readonly]), #page-form select').forEach(el => el.value = "");
+    document.querySelectorAll('.img-box img').forEach(img => { img.src = ""; img.style.display = 'none'; });
+    fotoBase64 = ""; windowEditRowIdx = null;
+    document.getElementById('form-title').innerHTML = `Formulir Database SPAM`;
+    let btn = document.getElementById('btnSubmit');
+    if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow-sm'; }
+  }
+
+  function loadDashboardData(forceRefresh = false){
+    if(forceRefresh) isDataLoaded = false;
+    if(isDataLoaded) return;
+
+    setLoader(true, "Menarik Data...");
+    fetchAPI('getLaporan')
+      .then(res => {
+        setLoader(false);
+        isDataLoaded = true; 
+        const tbody = document.getElementById('t-body');
+        let data = res.data || [];
+        
+        if(data.length === 0) {
+          document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
+          document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; return;
+        }
+        
+        let countBaik = 0; let countRusak = 0; let totalJiwa = 0;
+        windowAllReports = data.reverse(); 
+
+        const htmlRows = windowAllReports.map((r, index) => {
+          let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
+          if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) {
+            countBaik++; status = `<span class="badge bg-success">${status}</span>`;
+          } else if (status !== "-") {
+            countRusak++; status = `<span class="badge bg-danger">${status}</span>`;
+          }
+
+          let jiwa = parseInt(getSafeVal(r, 'JumlahJiwa', 'Jiwa')) || 0;
+          totalJiwa += jiwa;
+
+          let tglStr = getSafeVal(r, 'Timestamp', 'Waktu');
+          let dateFormated = tglStr;
+          try { if (tglStr !== "-" && tglStr !== "") { let d = new Date(tglStr); if (!isNaN(d.getTime())) dateFormated = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
+
+          let kec = getSafeVal(r, 'Kecamatan'); let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
+          let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun');
+          let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
+          
+          let lat = getSafeVal(r, 'Latitude', 'Lat'); let lng = getSafeVal(r, 'Longitude', 'Lng');
+          let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
+          
+          let btnDocs = '';
+          if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
+          if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
+          if(btnDocs === '') btnDocs = '-';
+
+          return `<tr>
+            <td class="ps-3"><small>${dateFormated}</small></td><td>${kec}</td><td class="fw-bold">${desa}</td><td>${spam}</td>
+            <td>${status}</td><td>${tahun}</td><td>${jiwa}</td><td>${petugas}</td><td>${btnDocs}</td>
+            <td><button class="btn btn-sm btn-warning py-0 px-2 text-dark shadow-sm" onclick="editLaporan(${index})"><i class="fas fa-edit"></i> Edit</button></td>
+          </tr>`;
+        }).join('');
+
+        document.getElementById('s-total').innerText = data.length;
+        document.getElementById('s-baik').innerText = countBaik;
+        document.getElementById('s-rusak').innerText = countRusak;
+        document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
+        tbody.innerHTML = htmlRows;
+      })
+      .catch(err => {
+        setLoader(false); alert("Gagal memuat data: " + err.message);
+      });
+  }
+
+  function editLaporan(index) {
+    const r = windowAllReports[index];
+    if(!r) return;
+    windowEditRowIdx = r.rowIdx;
+    
+    const setF = (id, key) => { let val = getSafeVal(r, key); if(val !== '-') document.getElementById(id).value = val; };
+    
+    setF('f_unitSpam', 'NamaUnitSPAM'); setF('f_kepalaUnit', 'NamaKepalaUnit'); setF('f_satker', 'SatkerPelaksana');
+    setF('f_kabupaten', 'Kabupaten'); setF('f_kecamatan', 'Kecamatan'); setF('f_desa', 'Desa/Kelurahan');
+    setF('f_alamat', 'Alamat'); setF('f_lat', 'Latitude'); setF('f_lng', 'Longitude');
+    setF('f_tahun', 'TahunPembangunan'); setF('f_biaya', 'BiayaPembangunan'); setF('f_dana', 'SumberDana');
+    setF('f_asset', 'NilaiAsset'); setF('f_sumberAir', 'SumberAirBaku'); setF('f_debitAir', 'DebitAirBaku');
+    setF('f_sistemProd', 'SistemProduksi'); setF('f_reservoir', 'JenisReservoir'); setF('f_aliran', 'SistemAliran');
+    setF('f_listrik', 'SumberDayaListrik'); setF('f_kapTerpasang', 'KapasitasTerpasang'); setF('f_kapProduksi', 'KapasitasProduksi');
+    setF('f_kapDistribusi', 'KapasitasDistribusi'); setF('f_kapTerjual', 'AirTerjual'); setF('f_jamOp', 'JamOperasional');
+    setF('f_status', 'StatusKeberfungsian'); setF('f_tTeknis', 'JumlahTenagaTeknis'); setF('f_tNonTeknis', 'JumlahTenagaNon-Teknis');
+    setF('f_kk', 'JumlahKK'); setF('f_jiwa', 'JumlahJiwa'); setF('f_sr', 'JumlahSR');
+    
+    document.querySelectorAll('.img-box img').forEach(img => { img.src = ""; img.style.display = 'none'; });
+    
+    document.getElementById('form-title').innerHTML = `<span class="text-warning"><i class="fas fa-edit"></i> MODE EDIT DATABASE</span>`;
+    let btnSubmit = document.getElementById('btnSubmit');
+    btnSubmit.innerHTML = `<i class="fas fa-save me-2"></i> UPDATE DATABASE`;
+    btnSubmit.className = 'btn btn-warning w-100 py-3 mt-3 fw-bold rounded-pill shadow-sm text-dark';
+    showPage('form'); 
+  }
+
+  function loadApproval(forceRefresh = false) {
+    if(forceRefresh) isApprovalLoaded = false;
+    if(isApprovalLoaded) return;
+
+    setLoader(true, "Memuat Daftar User...");
+    fetchAPI('getAllUsers')
+      .then(res => {
+        setLoader(false);
+        isApprovalLoaded = true; 
+        let tb = document.getElementById('t-approval');
+        let data = res.data || [];
+        if(data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
+        
+        tb.innerHTML = data.map(u => {
+          let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
+          let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
+          let actionBtns = '';
+          if (u.role !== 'admin') {
+            if (u.status === 'Pending') {
+              actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
+            }
+            actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
+          } else {
+             actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
+          }
+          return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
+        }).join('');
+      })
+      .catch(err => { setLoader(false); alert("Gagal memuat data: " + err.message); });
+  }
+
+  function accUser(row) {
+    setLoader(true, "Menyetujui...");
+    fetchAPI('approveUser', { rowIdx: row })
+      .then(() => { isApprovalLoaded = false; loadApproval(); })
+      .catch(err => { setLoader(false); alert("Gagal: " + err.message); });
+  }
+
+  function delUser(row, username) {
+    if(!confirm(`PERINGATAN: Apakah Anda yakin ingin MENGHAPUS akun '${username}' secara permanen? \nAkun yang dihapus tidak bisa login kembali.`)) return;
+    setLoader(true, "Menghapus akun...");
+    fetchAPI('deleteUser', { rowIdx: row })
+      .then(res => {
+        setLoader(false);
+        if(res.success) {
+          alert("Akun berhasil dihapus dari sistem.");
+          isApprovalLoaded = false; loadApproval();
+        } else alert(res.message);
+      })
+      .catch(err => { setLoader(false); alert("Error: " + err.message); });
+  }
+
+  function exportExcel() {
+    let table = document.getElementById("dataTable");
+    let wb = XLSX.utils.table_to_book(table, {sheet:"Laporan SPAM"});
+    XLSX.writeFile(wb, "Database_SPAM_Matim.xlsx");
+  }
+  function exportPDF() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
+    doc.text("Database Monitoring SPAM - Manggarai Timur", 14, 15);
+    doc.autoTable({ html: '#dataTable', startY: 20, styles: { fontSize: 8 }, headStyles: { fillColor: [37, 99, 235] } });
+    doc.save('Database_SPAM.pdf');
+  }
+
+  function logout(){ 
+    if(confirm("Apakah Anda yakin ingin keluar?")){
+      currentUser = "";
+      currentUserRole = "";
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('authBox').style.display = 'flex';
+      document.getElementById('l-user').value = '';
+      document.getElementById('l-pass').value = '';
+      
+      document.getElementById('menu-admin').style.display = 'none';
+      isDataLoaded = false;
+      isApprovalLoaded = false;
+    }
+  }
+</script>
+</body>
+</html>
