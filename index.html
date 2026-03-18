@@ -710,15 +710,18 @@
     showPage('form'); 
   }
 
-  async function loadApproval(forceRefresh = false) {
+  async function loadApproval(forceRefresh = false, isSilent = false) {
     if(forceRefresh) isApprovalLoaded = false;
-    if(isApprovalLoaded) return;
+    if(isApprovalLoaded && !isSilent) return;
 
-    setLoader(true, "Memuat Daftar User...");
+    // JIKA isSilent true, LAYAR LOADING BIRU TIDAK AKAN MUNCUL
+    if(!isSilent) setLoader(true, "Memuat Daftar User...");
     try {
       let res = await fetchAPI('getAllUsers');
       let data = res.data || [];
-      setLoader(false);
+      
+      if(!isSilent) setLoader(false);
+      
       isApprovalLoaded = true; 
       let tb = document.getElementById('t-approval');
       if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
@@ -737,7 +740,7 @@
         }
         return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
       }).join('');
-    } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
+    } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
   }
 
   async function accUser(row) {
