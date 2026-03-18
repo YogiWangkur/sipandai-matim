@@ -787,6 +787,15 @@
       isApprovalLoaded = false;
     }
   }
+
+  // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
+  // Mengecek pendaftar baru setiap 5 detik secara otomatis tanpa mengganggu layar admin
+  setInterval(() => {
+    if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
+      loadApproval(true, true); // forceRefresh = true, isSilent = true
+    }
+  }, 5000);
+
 </script>
 </body>
 </html>
