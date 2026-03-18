@@ -193,15 +193,9 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <!-- TOMBOL GPS ASLI KEMBALI -->
-            <div class="col-md-12">
-              <label class="form-label">8 & 9. Titik Koordinat GPS</label>
-              <div class="row g-2">
-                <div class="col-12 col-md-4"><button class="btn btn-dark w-100 shadow-sm" type="button" onclick="getGPS()"><i class="fas fa-map-marker-alt"></i> Ambil Lokasi</button></div>
-                <div class="col-6 col-md-4"><input type="text" id="f_lat" class="form-control shadow-sm" placeholder="Latitude" readonly></div>
-                <div class="col-6 col-md-4"><input type="text" id="f_lng" class="form-control shadow-sm" placeholder="Longitude" readonly></div>
-              </div>
-            </div>
+            <!-- Fitur GPS disembunyikan secara aman sesuai permintaan client -->
+            <input type="hidden" id="f_lat" value="-">
+            <input type="hidden" id="f_lng" value="-">
           </div>
         </div>
 
@@ -367,7 +361,7 @@
   // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
   // CONTOH: const SCRIPT_URL = "https://script.google.com/macros/s/AKfyc.../exec";
   // =========================================================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
+  const SCRIPT_URL = "";
 
   // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
   async function fetchAPI(action, payload = {}) {
