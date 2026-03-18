@@ -45,6 +45,22 @@
     .table-bordered th, .table-bordered td { border: 1px solid #cbd5e1 !important; }
     .table-dark th { border-color: #334155 !important; }
 
+    /* DARK MODE OVERRIDES (TIDAK MERUBAH UI ASLI) */
+    body.dark-mode { background-color: #0f172a; color: #f8fafc; }
+    body.dark-mode .bg-white, body.dark-mode .card-custom, body.dark-mode .form-section { background-color: #1e293b !important; border-color: #334155; }
+    body.dark-mode .text-dark { color: #f8fafc !important; }
+    body.dark-mode .text-muted { color: #94a3b8 !important; }
+    body.dark-mode .form-section-title { color: #f8fafc; border-bottom-color: #334155; }
+    body.dark-mode .form-label { color: #cbd5e1; }
+    body.dark-mode .form-control, body.dark-mode .form-select { background-color: #0f172a; color: #f8fafc; border-color: #475569; }
+    body.dark-mode .form-control:focus, body.dark-mode .form-select:focus { background-color: #0f172a; color: #f8fafc; }
+    body.dark-mode .table { color: #f8fafc; }
+    body.dark-mode .table-light th { background-color: #334155 !important; color: #f8fafc; border-color: #475569; }
+    body.dark-mode .table-bordered td, body.dark-mode .table-bordered th { border-color: #475569 !important; }
+    body.dark-mode .table-hover tbody tr:hover { background-color: #334155; color: #f8fafc; }
+    body.dark-mode .btn-outline-dark { color: #f8fafc; border-color: #f8fafc; }
+    body.dark-mode .btn-outline-dark:hover { background-color: #f8fafc; color: #0f172a; }
+
     @media (max-width: 992px) { 
       .sidebar { left: -280px; box-shadow: 4px 0 15px rgba(0,0,0,0.5); } 
       .sidebar.active { left: 0; } 
@@ -64,7 +80,7 @@
 <div id="authBox">
   <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 400px; max-width: 100%;">
     <div class="mb-3">
-      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
+      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
     </div>
     <h3 class="fw-bold m-0">SI-PAM MATIM</h3>
     <p class="text-muted small mb-4">Sistem Informasi Monitoring SPAM</p>
@@ -98,8 +114,9 @@
   <div class="sidebar">
     <div class="p-4 border-bottom border-secondary mb-3 d-flex justify-content-between align-items-center">
       <div class="w-100 text-center">
+        <!-- Wadah Logo & Ikon Edit Pensil -->
         <div class="position-relative d-inline-block">
-          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
+          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
           <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
             <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
           </button>
@@ -126,6 +143,7 @@
       <!-- All Roles -->
       <div id="n-form" class="nav-link" onclick="showPage('form')"><i class="fas fa-edit me-3"></i> Input Laporan</div>
       <div id="n-layanan" class="nav-link" onclick="showPage('layanan')"><i class="fas fa-headset me-3"></i> Menu Layanan</div>
+      <div id="n-pengaturan" class="nav-link" onclick="showPage('pengaturan')"><i class="fas fa-cog me-3"></i> Pengaturan & Akun</div>
       
       <hr class="mx-3 opacity-25 text-white">
       <div class="nav-link text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-3"></i> Keluar</div>
@@ -140,7 +158,7 @@
 
     <!-- PAGE: DASHBOARD (ADMIN) -->
     <div id="page-dashboard">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0">Dashboard Ringkasan</h3>
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
@@ -179,14 +197,9 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <div class="col-md-12">
-              <label class="form-label">8 & 9. Titik Koordinat GPS</label>
-              <div class="input-group shadow-sm">
-                <button class="btn btn-dark" type="button" onclick="getGPS()"><i class="fas fa-map-marker-alt"></i> Ambil Lokasi</button>
-                <input type="text" id="f_lat" class="form-control" placeholder="Latitude" readonly>
-                <input type="text" id="f_lng" class="form-control" placeholder="Longitude" readonly>
-              </div>
-            </div>
+            <!-- Fitur GPS disembunyikan secara aman -->
+            <input type="hidden" id="f_lat" value="-">
+            <input type="hidden" id="f_lng" value="-">
           </div>
         </div>
 
@@ -213,7 +226,7 @@
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
             <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
-            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option></select></div>
+            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option><option>Gabungan</option></select></div>
             <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
             
             <div class="col-md-3"><label class="form-label">7. Kapasitas Terpasang (l/dtk)</label><input type="number" step="0.01" id="f_kapTerpasang" class="form-control"></div>
@@ -290,7 +303,7 @@
 
     <!-- PAGE: MANAJEMEN USER & APPROVAL (ADMIN) -->
     <div id="page-approval" style="display:none">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h3 class="fw-bold m-0">Manajemen & Persetujuan Akun</h3>
         <button class="btn btn-sm btn-outline-primary shadow-sm" onclick="loadApproval(true)"><i class="fas fa-sync"></i> Refresh</button>
       </div>
@@ -344,10 +357,79 @@
       </div>
     </div>
 
+    <!-- PAGE: PENGATURAN & AKUN (BARU) -->
+    <div id="page-pengaturan" style="display:none">
+      <h3 class="fw-bold mb-4">Pengaturan & Akun</h3>
+      <div class="row g-4">
+        
+        <!-- Mode Tampilan (Untuk Semua Role) -->
+        <div class="col-md-6">
+          <div class="card-custom shadow-sm h-100 border-top border-secondary border-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-paint-roller me-2 text-primary"></i>Tampilan Aplikasi</h5>
+            <p class="text-muted small">Pilih mode warna aplikasi sesuai kenyamanan Anda.</p>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-outline-dark w-50" onclick="toggleDarkMode(false)"><i class="fas fa-sun me-2"></i> Mode Terang</button>
+              <button class="btn btn-dark w-50" onclick="toggleDarkMode(true)"><i class="fas fa-moon me-2"></i> Mode Gelap</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manajemen Akun (Khusus Admin) -->
+        <div class="col-md-6" id="pengaturan-admin" style="display:none">
+          <div class="card-custom shadow-sm h-100 border-top border-warning border-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-user-edit me-2 text-warning"></i>Reset Akun (Admin)</h5>
+            <p class="text-muted small">Ganti username atau password milik pengguna / petugas.</p>
+            
+            <label class="form-label small fw-bold mt-2">Pilih Akun Pengguna</label>
+            <div class="d-flex gap-2 mb-3">
+              <select id="p_selectUser" class="form-select flex-grow-1">
+                <option value="">-- Memuat Data --</option>
+              </select>
+              <button class="btn btn-sm btn-outline-primary" onclick="loadUsersForReset()"><i class="fas fa-sync"></i></button>
+            </div>
+
+            <label class="form-label small fw-bold">Username Baru (Kosongkan jika tetap)</label>
+            <input type="text" id="p_newUsername" class="form-control mb-3" placeholder="Ketik username baru">
+
+            <label class="form-label small fw-bold">Password Baru (Kosongkan jika tetap)</label>
+            <input type="password" id="p_newPassword" class="form-control mb-3" placeholder="Ketik password baru">
+
+            <button class="btn btn-warning w-100 fw-bold text-dark shadow-sm" onclick="resetUserAccount()"><i class="fas fa-save me-2"></i>Simpan Perubahan Akun</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
+  // =========================================================================
+  // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
+  // CONTOH: const SCRIPT_URL = "https://script.google.com/macros/s/AKfyc.../exec";
+  // =========================================================================
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
+
+  // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
+  async function fetchAPI(action, payload = {}) {
+    if (!SCRIPT_URL || SCRIPT_URL === "") {
+      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris kode!");
+      return { success: false, message: "Koneksi database belum diatur." };
+    }
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: action, payload: payload })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Fetch error:", error);
+      throw new Error("Gagal terhubung ke server database.");
+    }
+  }
+
   let currentUser = "";
   let currentUserRole = "";
   let windowAllReports = []; 
@@ -356,29 +438,34 @@
 
   let isDataLoaded = false;
   let isApprovalLoaded = false;
+  let checkApprovalInterval = null; 
 
-  window.onload = function() {
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if(res && res.url && res.url.length > 5) {
-          let finalUrl = res.url;
-          if (finalUrl.includes("id=")) {
-            let fileId = finalUrl.split("id=")[1].split("&")[0];
-            finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
-          }
-          let loginLogo = document.getElementById('login-logo');
-          if(loginLogo) loginLogo.src = finalUrl;
-          let sidebarLogo = document.getElementById('sidebar-logo');
-          if(sidebarLogo) sidebarLogo.src = finalUrl;
+  window.onload = async function() {
+    // Cek Local Storage untuk Mode Gelap saat pertama kali buka web
+    if (localStorage.getItem('theme') === 'dark') {
+      toggleDarkMode(true);
+    }
+
+    try {
+      let res = await fetchAPI('getAppLogo');
+      let url = res.url;
+      if(url && url.length > 5) {
+        let finalUrl = url;
+        if (finalUrl.includes("id=")) {
+          let fileId = finalUrl.split("id=")[1].split("&")[0];
+          finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
-      })
-      .getAppLogo();
+        document.getElementById('login-logo').src = finalUrl;
+        document.getElementById('sidebar-logo').src = finalUrl;
+        
+        // Memasang logo ke tab browser secara otomatis (Favicon)
+        let linkIcon = document.getElementById("favicon");
+        if (linkIcon) linkIcon.href = finalUrl;
+        let linkApple = document.getElementById("apple-favicon");
+        if (linkApple) linkApple.href = finalUrl;
+      }
+    } catch(err) { console.log("Gagal memuat logo: " + err); }
   };
-
-  function setLoader(show, text="Memproses Data..."){ 
-    document.getElementById('loader-text').innerText = text;
-    document.getElementById('loader').style.display = show ? 'flex' : 'none'; 
-  }
 
   function changeLogoUrl() {
     document.getElementById('logo-upload').click();
@@ -387,27 +474,28 @@
   function handleLogoUpload(input) {
     if(input.files && input.files[0]) {
       let reader = new FileReader();
-      reader.onload = e => {
+      reader.onload = async e => {
         let base64 = e.target.result;
-        let loginLogo = document.getElementById('login-logo');
-        if(loginLogo) loginLogo.src = base64;
+        document.getElementById('login-logo').src = base64;
         document.getElementById('sidebar-logo').src = base64;
         
         setLoader(true, "Mengunggah Logo ke Server...");
-        google.script.run
-          .withSuccessHandler(res => {
-            setLoader(false);
-            if(res && res.success) alert(res.message);
-            else alert("Gagal memperbarui logo: " + (res ? res.message : 'Unknown error'));
-          })
-          .withFailureHandler(err => { setLoader(false); alert("Error menyimpan logo: " + err); })
-          .uploadAppLogo(base64);
+        try {
+          let res = await fetchAPI('uploadAppLogo', { base64Str: base64 });
+          setLoader(false);
+          if(res.success) alert(res.message);
+          else alert("Gagal memperbarui logo: " + res.message);
+        } catch(err) { setLoader(false); alert("Error menyimpan logo: " + err.message); }
       };
       reader.readAsDataURL(input.files[0]);
     }
     input.value = '';
   }
 
+  function setLoader(show, text="Memproses Data..."){ 
+    document.getElementById('loader-text').innerText = text;
+    document.getElementById('loader').style.display = show ? 'flex' : 'none'; 
+  }
   function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); }
   function toggleAuth(type) {
     document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
@@ -426,51 +514,91 @@
     } return "-";
   }
 
-  function doRegister() {
+  async function doRegister() {
     const u = document.getElementById('r-user').value;
     const p = document.getElementById('r-pass').value;
     if(!u || !p) return alert("Isi username dan password");
+    
     setLoader(true, "Mendaftarkan Akun...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
+    try {
+      let res = await fetchAPI('registerUser', { u: u, p: p });
+      setLoader(false);
+      
+      if(res.success) {
+        alert("Pendaftaran berhasil! Sistem akan OTOMATIS masuk ke aplikasi segera setelah Admin menyetujui akun Anda. Mohon tunggu di halaman ini.");
+        
+        toggleAuth('login');
+        document.getElementById('l-user').value = u;
+        document.getElementById('l-pass').value = p;
+
+        if (checkApprovalInterval) clearInterval(checkApprovalInterval);
+
+        // Agen Pemeriksa
+        checkApprovalInterval = setInterval(async () => {
+          try {
+            let loginRes = await fetchAPI('loginUser', { u: u, p: p });
+            if(loginRes.success) {
+              clearInterval(checkApprovalInterval); 
+              
+              currentUser = loginRes.username;
+              currentUserRole = (loginRes.role || "petugas").toLowerCase(); 
+              
+              document.getElementById('displayUser').innerText = `User: ${loginRes.username}`;
+              document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
+              
+              if (currentUserRole === 'admin') {
+                 document.getElementById('menu-admin').style.display = 'block'; 
+                 document.getElementById('btn-edit-logo').style.display = 'block'; 
+                 showPage('dashboard');
+              } else {
+                 document.getElementById('menu-admin').style.display = 'none'; 
+                 document.getElementById('btn-edit-logo').style.display = 'none'; 
+                 showPage('form');
+              }
+              document.getElementById('authBox').style.display = 'none';
+              document.getElementById('mainApp').style.display = 'block';
+              
+              alert("Hore! Akun Anda telah disetujui oleh Admin. Selamat datang di SI-PAM.");
+            }
+          } catch(e) {} 
+        }, 5000);
+      } else {
         alert(res.message);
-        if(res.success) toggleAuth('login');
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err); })
-      .registerUser(u, p);
+      }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
-  function doLogin(){
+  async function doLogin(){
     const u = document.getElementById('l-user').value;
     const p = document.getElementById('l-pass').value;
     if(!u || !p) return alert("Harap isi username dan password");
+    
     setLoader(true, "Verifikasi...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success){
-          currentUser = res.username;
-          currentUserRole = (res.role || "petugas").toLowerCase(); 
-          
-          document.getElementById('displayUser').innerText = `User: ${res.username}`;
-          document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
-          
-          if (currentUserRole === 'admin') {
-             document.getElementById('menu-admin').style.display = 'block'; 
-             document.getElementById('btn-edit-logo').style.display = 'block';
-             showPage('dashboard');
-          } else {
-             document.getElementById('menu-admin').style.display = 'none'; 
-             document.getElementById('btn-edit-logo').style.display = 'none';
-             showPage('form');
-          }
-          document.getElementById('authBox').style.display = 'none';
-          document.getElementById('mainApp').style.display = 'block';
-        } else { alert(res.message); }
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err); })
-      .loginUser(u, p);
+    try {
+      let res = await fetchAPI('loginUser', { u: u, p: p });
+      setLoader(false);
+      if(res.success){
+        if (checkApprovalInterval) clearInterval(checkApprovalInterval); 
+        
+        currentUser = res.username;
+        currentUserRole = (res.role || "petugas").toLowerCase(); 
+        
+        document.getElementById('displayUser').innerText = `User: ${res.username}`;
+        document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
+        
+        if (currentUserRole === 'admin') {
+           document.getElementById('menu-admin').style.display = 'block'; 
+           document.getElementById('btn-edit-logo').style.display = 'block'; 
+           showPage('dashboard');
+        } else {
+           document.getElementById('menu-admin').style.display = 'none'; 
+           document.getElementById('btn-edit-logo').style.display = 'none'; 
+           showPage('form');
+        }
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+      } else { alert(res.message); }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
   function showPage(pageId){
@@ -488,18 +616,16 @@
     if(window.innerWidth <= 992) document.querySelector('.sidebar').classList.remove('active');
     
     if((pageId === 'dashboard' || pageId === 'data') && !isDataLoaded) loadDashboardData();
-    if(pageId === 'approval' && !isApprovalLoaded) loadApproval();
-  }
-
-  function getGPS(){
-    setLoader(true, "Mencari Satelit GPS...");
-    navigator.geolocation.getCurrentPosition(pos => {
-      setLoader(false);
-      document.getElementById('f_lat').value = pos.coords.latitude.toFixed(6);
-      document.getElementById('f_lng').value = pos.coords.longitude.toFixed(6);
-    }, (err) => {
-      setLoader(false); alert("GPS Gagal. Pastikan izin lokasi aktif di browser/HP Anda.");
-    }, { enableHighAccuracy: true });
+    if(pageId === 'approval') loadApproval(true);
+    
+    if(pageId === 'pengaturan') {
+      if (currentUserRole === 'admin') {
+        document.getElementById('pengaturan-admin').style.display = 'block';
+        loadUsersForReset(); 
+      } else {
+        document.getElementById('pengaturan-admin').style.display = 'none';
+      }
+    }
   }
 
   function preview(input, targetId){
@@ -514,15 +640,7 @@
     }
   }
 
-  function getInputValue(ids) {
-    for (let id of ids) {
-      let el = document.getElementById(id);
-      if (el && el.value) return el.value;
-    }
-    return "";
-  }
-
-  function submitData(){
+  async function submitData(){
     const data = {
       rowIdx: windowEditRowIdx,
       f_unitSpam: document.getElementById('f_unitSpam').value,
@@ -562,22 +680,20 @@
     if(!data.f_unitSpam || !data.f_desa) return alert("Nama Unit SPAM dan Desa Wajib Diisi!");
 
     setLoader(true, "Menyimpan Database...");
-    
-    let serverCall = google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success){
-          alert("Berhasil! Database tersimpan.");
-          clearForm();
-          isDataLoaded = false; // Reset agar memuat data baru
-          if (currentUserRole === 'admin') showPage('data');
-          else showPage('form');
-        } else { alert("Gagal: " + res.message); }
-      })
-      .withFailureHandler(err => { setLoader(false); alert("Error Sistem: " + err); });
-
-    if (data.rowIdx) serverCall.updateLaporan(data);
-    else serverCall.simpanLaporan(data);
+    try {
+      let res;
+      if (data.rowIdx) res = await fetchAPI('updateLaporan', { obj: data });
+      else res = await fetchAPI('simpanLaporan', { obj: data });
+      
+      setLoader(false);
+      if(res.success){
+        alert("Berhasil! Database tersimpan.");
+        clearForm();
+        isDataLoaded = false; 
+        if (currentUserRole === 'admin') showPage('data');
+        else showPage('form');
+      } else { alert("Gagal: " + res.message); }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
   function clearForm(){
@@ -586,18 +702,22 @@
     fotoBase64 = ""; windowEditRowIdx = null;
     document.getElementById('form-title').innerHTML = `Formulir Database SPAM`;
     let btn = document.getElementById('btnSubmit');
-    if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow-sm'; }
+    if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow'; }
   }
 
-  function loadDashboardData(forceRefresh = false){
+  async function loadDashboardData(forceRefresh = false){
     if(forceRefresh) isDataLoaded = false;
     if(isDataLoaded) return;
 
     setLoader(true, "Menarik Data...");
-    google.script.run.withSuccessHandler(data => {
+    try {
+      let res = await fetchAPI('getLaporan');
+      let data = res.data || [];
+      
       setLoader(false);
       isDataLoaded = true; 
       const tbody = document.getElementById('t-body');
+      
       if(!data || data.length === 0) {
         document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
         document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
@@ -630,7 +750,6 @@
         let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
         
         let btnDocs = '';
-        if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
         if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
         if(btnDocs === '') btnDocs = '-';
 
@@ -646,7 +765,7 @@
       document.getElementById('s-rusak').innerText = countRusak;
       document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
       tbody.innerHTML = htmlRows;
-    }).getLaporan();
+    } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
   }
 
   function editLaporan(index) {
@@ -676,71 +795,58 @@
     showPage('form'); 
   }
 
-  // FUNGSI MANAJEMEN USER (Tampil, Approve, Hapus)
-  function loadApproval(forceRefresh = false) {
+  async function loadApproval(forceRefresh = false, isSilent = false) {
     if(forceRefresh) isApprovalLoaded = false;
-    if(isApprovalLoaded) return;
+    if(isApprovalLoaded && !isSilent) return;
 
-    setLoader(true, "Memuat Daftar User...");
-    google.script.run
-      .withSuccessHandler(data => {
-        setLoader(false);
-        isApprovalLoaded = true; 
-        let tb = document.getElementById('t-approval');
-        if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
-        
-        tb.innerHTML = data.map(u => {
-          let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
-          let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
-          let actionBtns = '';
-          if (u.role !== 'admin') {
-            if (u.status === 'Pending') {
-              actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
-            }
-            // TOMBOL HAPUS (MERAH)
-            actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
-          } else {
-             actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
+    if(!isSilent) setLoader(true, "Memuat Daftar User...");
+    try {
+      let res = await fetchAPI('getAllUsers');
+      let data = res.data || [];
+      
+      if(!isSilent) setLoader(false);
+      
+      isApprovalLoaded = true; 
+      let tb = document.getElementById('t-approval');
+      if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
+      
+      tb.innerHTML = data.map(u => {
+        let statusBadge = u.status === 'Approved' ? '<span class="badge bg-success">Approved</span>' : '<span class="badge bg-warning text-dark">Pending</span>';
+        let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
+        let actionBtns = '';
+        if (u.role !== 'admin') {
+          if (u.status === 'Pending') {
+            actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
           }
-          return `<tr><td class="ps-4 fw-bold text-dark">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
-        }).join('');
-      })
-      .withFailureHandler(err => {
-        setLoader(false);
-        alert("Gagal memuat data User. Pastikan Code.gs sudah diperbarui. Pesan: " + err.message);
-      })
-      .getAllUsers();
+          actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
+        } else {
+           actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
+        }
+        // PERBAIKAN: Memaksa teks username menjadi hitam (color: #000000) agar selalu terlihat di tabel
+        return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
+      }).join('');
+    } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
   }
 
-  function accUser(row) {
+  async function accUser(row) {
     setLoader(true, "Menyetujui...");
-    google.script.run
-      .withSuccessHandler(() => {
-        isApprovalLoaded = false; loadApproval();
-      })
-      .withFailureHandler(err => {
-        setLoader(false);
-        alert("Gagal menyetujui User: " + err.message);
-      })
-      .approveUser(row);
+    try {
+      await fetchAPI('approveUser', { rowIdx: row });
+      isApprovalLoaded = false; loadApproval();
+    } catch(err) { setLoader(false); alert("Gagal: " + err.message); }
   }
 
-  function delUser(row, username) {
+  async function delUser(row, username) {
     if(!confirm(`PERINGATAN: Apakah Anda yakin ingin MENGHAPUS akun '${username}' secara permanen? \nAkun yang dihapus tidak bisa login kembali.`)) return;
     setLoader(true, "Menghapus akun...");
-    google.script.run
-      .withSuccessHandler(res => {
-        setLoader(false);
-        if(res.success) {
-          alert("Akun berhasil dihapus dari sistem.");
-          isApprovalLoaded = false; loadApproval();
-        } else alert(res.message);
-      })
-      .withFailureHandler(err => { 
-        setLoader(false); 
-        alert("Error: " + err.message); 
-      })
-      .deleteUser(row);
+    try {
+      let res = await fetchAPI('deleteUser', { rowIdx: row });
+      setLoader(false);
+      if(res.success) {
+        alert("Akun berhasil dihapus dari sistem.");
+        isApprovalLoaded = false; loadApproval();
+      } else alert(res.message);
+    } catch(err) { setLoader(false); alert("Error: " + err.message); }
   }
 
   function exportExcel() {
@@ -748,6 +854,7 @@
     let wb = XLSX.utils.table_to_book(table, {sheet:"Laporan SPAM"});
     XLSX.writeFile(wb, "Database_SPAM_Matim.xlsx");
   }
+
   function exportPDF() {
     const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
     doc.text("Database Monitoring SPAM - Manggarai Timur", 14, 15);
@@ -755,7 +862,68 @@
     doc.save('Database_SPAM.pdf');
   }
 
-  // FUNGSI KELUAR TANPA REFRESH
+  // ==========================================
+  // FITUR PENGATURAN & RESET AKUN
+  // ==========================================
+  
+  function toggleDarkMode(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  let resetUserList = [];
+  async function loadUsersForReset() {
+    let select = document.getElementById('p_selectUser');
+    select.innerHTML = '<option value="">-- Memuat Data --</option>';
+    try {
+      let res = await fetchAPI('getAllUsers');
+      resetUserList = res.data || [];
+      select.innerHTML = '<option value="">-- Pilih Akun --</option>';
+      resetUserList.forEach(u => {
+        select.innerHTML += `<option value="${u.row}">${u.username} (${u.role === 'admin' ? 'Admin' : 'Petugas'})</option>`;
+      });
+    } catch (e) {
+      select.innerHTML = '<option value="">Gagal Memuat</option>';
+    }
+  }
+
+  async function resetUserAccount() {
+    const rowIdx = document.getElementById('p_selectUser').value;
+    const newUsername = document.getElementById('p_newUsername').value;
+    const newPassword = document.getElementById('p_newPassword').value;
+
+    if (!rowIdx) return alert("Pilih akun yang ingin diubah terlebih dahulu!");
+    if (!newUsername && !newPassword) return alert("Harap isi username baru atau password baru!");
+
+    if (!confirm("Peringatan: Anda yakin ingin mengubah username/password akun ini?")) return;
+
+    setLoader(true, "Menyimpan Perubahan...");
+    try {
+      let res = await fetchAPI('updateUserCredentials', { 
+        rowIdx: rowIdx, 
+        newUsername: newUsername, 
+        newPassword: newPassword 
+      });
+      setLoader(false);
+      if (res.success) {
+        alert(res.message);
+        document.getElementById('p_newUsername').value = "";
+        document.getElementById('p_newPassword').value = "";
+        loadUsersForReset(); 
+        isApprovalLoaded = false; 
+      } else {
+        alert("Gagal: " + res.message);
+      }
+    } catch (e) {
+      setLoader(false); alert("Error Sistem: " + e.message);
+    }
+  }
+
   function logout(){ 
     if(confirm("Apakah Anda yakin ingin keluar?")){
       currentUser = "";
@@ -765,12 +933,19 @@
       document.getElementById('l-user').value = '';
       document.getElementById('l-pass').value = '';
       
-      // Matikan menu admin agar aman
       document.getElementById('menu-admin').style.display = 'none';
       isDataLoaded = false;
       isApprovalLoaded = false;
     }
   }
+
+  // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
+  setInterval(() => {
+    if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
+      loadApproval(true, true); 
+    }
+  }, 5000);
+
 </script>
 </body>
 </html>
