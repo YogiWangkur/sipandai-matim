@@ -228,7 +228,7 @@
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
             <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
-           <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option><option>Gabungan</option></select></div>
+            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option></select></div>
             <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
             
             <div class="col-md-3"><label class="form-label">7. Kapasitas Terpasang (l/dtk)</label><input type="number" step="0.01" id="f_kapTerpasang" class="form-control"></div>
@@ -367,7 +367,7 @@
   // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
   // CONTOH: const SCRIPT_URL = "https://script.google.com/macros/s/AKfyc.../exec";
   // =========================================================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
+  const SCRIPT_URL = "";
 
   // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
   async function fetchAPI(action, payload = {}) {
@@ -409,6 +409,12 @@
         }
         document.getElementById('login-logo').src = finalUrl;
         document.getElementById('sidebar-logo').src = finalUrl;
+        
+        // Memasang logo ke tab browser secara otomatis (Favicon)
+        let linkIcon = document.querySelector("link[rel='icon']");
+        if (linkIcon) linkIcon.href = finalUrl;
+        let linkApple = document.querySelector("link[rel='apple-touch-icon']");
+        if (linkApple) linkApple.href = finalUrl;
       }
     } catch(err) { console.log("Gagal memuat logo: " + err); }
   };
