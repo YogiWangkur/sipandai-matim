@@ -8,7 +8,8 @@
   <!-- Identitas Web di Google -->
   <title>SIPANDAI - Kabupaten Manggarai Timur</title>
   <meta name="description" content="Sistem Informasi Monitoring SPAM Kabupaten Manggarai Timur. Aplikasi pendataan, pelaporan, dan pemantauan infrastruktur air minum.">
-  <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg">
+  <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg" id="favicon">
+  <link rel="apple-touch-icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" id="apple-favicon">
 
   <!-- Frameworks & Libraries Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -50,6 +51,22 @@
     .table-nowrap th, .table-nowrap td { white-space: nowrap; font-size: 13px; vertical-align: middle; }
     .table-bordered th, .table-bordered td { border: 1px solid #cbd5e1 !important; }
     .table-dark th { border-color: #334155 !important; }
+
+    /* DARK MODE OVERRIDES (TIDAK MERUBAH UI ASLI) */
+    body.dark-mode { background-color: #0f172a; color: #f8fafc; }
+    body.dark-mode .bg-white, body.dark-mode .card-custom, body.dark-mode .form-section { background-color: #1e293b !important; border-color: #334155; }
+    body.dark-mode .text-dark { color: #f8fafc !important; }
+    body.dark-mode .text-muted { color: #94a3b8 !important; }
+    body.dark-mode .form-section-title { color: #f8fafc; border-bottom-color: #334155; }
+    body.dark-mode .form-label { color: #cbd5e1; }
+    body.dark-mode .form-control, body.dark-mode .form-select { background-color: #0f172a; color: #f8fafc; border-color: #475569; }
+    body.dark-mode .form-control:focus, body.dark-mode .form-select:focus { background-color: #0f172a; color: #f8fafc; }
+    body.dark-mode .table { color: #f8fafc; }
+    body.dark-mode .table-light th { background-color: #334155 !important; color: #f8fafc; border-color: #475569; }
+    body.dark-mode .table-bordered td, body.dark-mode .table-bordered th { border-color: #475569 !important; }
+    body.dark-mode .table-hover tbody tr:hover { background-color: #334155; color: #f8fafc; }
+    body.dark-mode .btn-outline-dark { color: #f8fafc; border-color: #f8fafc; }
+    body.dark-mode .btn-outline-dark:hover { background-color: #f8fafc; color: #0f172a; }
 
     /* PERBAIKAN TAMPILAN HP (MOBILE RESPONSIVE) */
     @media (max-width: 992px) { 
@@ -107,16 +124,13 @@
   <div class="sidebar">
     <div class="p-4 border-bottom border-secondary mb-3 d-flex justify-content-between align-items-center">
       <div class="w-100 text-center">
-        
         <!-- Wadah Logo & Ikon Edit Pensil -->
         <div class="position-relative d-inline-block">
           <img id="sidebar-logo" src="" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
-          <!-- Ikon Edit Logo Khusus Admin -->
           <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
             <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
           </button>
         </div>
-
         <h4 class="fw-bold m-0 text-white">SIPANDAI</h4>
         <small class="text-info">Manggarai Timur</small>
       </div>
@@ -139,6 +153,7 @@
       <!-- All Roles -->
       <div id="n-form" class="nav-link" onclick="showPage('form')"><i class="fas fa-edit me-3"></i> Input Laporan</div>
       <div id="n-layanan" class="nav-link" onclick="showPage('layanan')"><i class="fas fa-headset me-3"></i> Menu Layanan</div>
+      <div id="n-pengaturan" class="nav-link" onclick="showPage('pengaturan')"><i class="fas fa-cog me-3"></i> Pengaturan & Akun</div>
       
       <hr class="mx-3 opacity-25 text-white">
       <div class="nav-link text-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-3"></i> Keluar</div>
@@ -158,7 +173,6 @@
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
       <div class="row g-3">
-        <!-- PERBAIKAN: Kotak disusun 1 kolom di HP (col-12) agar teks tidak terpotong -->
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary mt-2">0</h2></div></div>
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success mt-2">0</h2></div></div>
         <div class="col-md-3 col-sm-6 col-12"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger mt-2">0</h2></div></div>
@@ -193,7 +207,7 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <!-- Fitur GPS disembunyikan secara aman sesuai permintaan client -->
+            <!-- Fitur GPS disembunyikan secara aman -->
             <input type="hidden" id="f_lat" value="-">
             <input type="hidden" id="f_lng" value="-">
           </div>
@@ -222,7 +236,7 @@
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
             <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
-            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option></select></div>
+            <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option><option>Gabungan</option></select></div>
             <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
             
             <div class="col-md-3"><label class="form-label">7. Kapasitas Terpasang (l/dtk)</label><input type="number" step="0.01" id="f_kapTerpasang" class="form-control"></div>
@@ -353,6 +367,50 @@
       </div>
     </div>
 
+    <!-- PAGE: PENGATURAN & AKUN (BARU) -->
+    <div id="page-pengaturan" style="display:none">
+      <h3 class="fw-bold mb-4">Pengaturan & Akun</h3>
+      <div class="row g-4">
+        
+        <!-- Mode Tampilan (Untuk Semua Role) -->
+        <div class="col-md-6">
+          <div class="card-custom shadow-sm h-100 border-top border-secondary border-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-paint-roller me-2 text-primary"></i>Tampilan Aplikasi</h5>
+            <p class="text-muted small">Pilih mode warna aplikasi sesuai kenyamanan Anda.</p>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-outline-dark w-50" onclick="toggleDarkMode(false)"><i class="fas fa-sun me-2"></i> Mode Terang</button>
+              <button class="btn btn-dark w-50" onclick="toggleDarkMode(true)"><i class="fas fa-moon me-2"></i> Mode Gelap</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manajemen Akun (Khusus Admin) -->
+        <div class="col-md-6" id="pengaturan-admin" style="display:none">
+          <div class="card-custom shadow-sm h-100 border-top border-warning border-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-user-edit me-2 text-warning"></i>Reset Akun (Admin)</h5>
+            <p class="text-muted small">Ganti username atau password milik pengguna / petugas.</p>
+            
+            <label class="form-label small fw-bold mt-2">Pilih Akun Pengguna</label>
+            <div class="d-flex gap-2 mb-3">
+              <select id="p_selectUser" class="form-select flex-grow-1">
+                <option value="">-- Memuat Data --</option>
+              </select>
+              <button class="btn btn-sm btn-outline-primary" onclick="loadUsersForReset()"><i class="fas fa-sync"></i></button>
+            </div>
+
+            <label class="form-label small fw-bold">Username Baru (Kosongkan jika tetap)</label>
+            <input type="text" id="p_newUsername" class="form-control mb-3" placeholder="Ketik username baru">
+
+            <label class="form-label small fw-bold">Password Baru (Kosongkan jika tetap)</label>
+            <input type="password" id="p_newPassword" class="form-control mb-3" placeholder="Ketik password baru">
+
+            <button class="btn btn-warning w-100 fw-bold text-dark shadow-sm" onclick="resetUserAccount()"><i class="fas fa-save me-2"></i>Simpan Perubahan Akun</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -366,7 +424,7 @@
   // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
   async function fetchAPI(action, payload = {}) {
     if (!SCRIPT_URL || SCRIPT_URL === "") {
-      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris 163!");
+      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris kode 252!");
       return { success: false, message: "Koneksi database belum diatur." };
     }
     try {
@@ -390,9 +448,14 @@
 
   let isDataLoaded = false;
   let isApprovalLoaded = false;
-  let checkApprovalInterval = null; // Tambahan: Variabel baru untuk Agen Auto-Login
+  let checkApprovalInterval = null; 
 
   window.onload = async function() {
+    // Cek Local Storage untuk Mode Gelap saat pertama kali buka web
+    if (localStorage.getItem('theme') === 'dark') {
+      toggleDarkMode(true);
+    }
+
     try {
       let res = await fetchAPI('getAppLogo');
       let url = res.url;
@@ -406,9 +469,9 @@
         document.getElementById('sidebar-logo').src = finalUrl;
         
         // Memasang logo ke tab browser secara otomatis (Favicon)
-        let linkIcon = document.querySelector("link[rel='icon']");
+        let linkIcon = document.getElementById("favicon");
         if (linkIcon) linkIcon.href = finalUrl;
-        let linkApple = document.querySelector("link[rel='apple-touch-icon']");
+        let linkApple = document.getElementById("apple-favicon");
         if (linkApple) linkApple.href = finalUrl;
       }
     } catch(err) { console.log("Gagal memuat logo: " + err); }
@@ -506,7 +569,6 @@
               document.getElementById('authBox').style.display = 'none';
               document.getElementById('mainApp').style.display = 'block';
               
-              // Notifikasi pop-up saat berhasil ditarik masuk
               alert("Hore! Akun Anda telah disetujui oleh Admin. Selamat datang di SIPANDAI.");
             }
           } catch(e) {} // Abaikan error jaringan saat mengecek diam-diam
@@ -527,7 +589,7 @@
       let res = await fetchAPI('loginUser', { u: u, p: p });
       setLoader(false);
       if(res.success){
-        if (checkApprovalInterval) clearInterval(checkApprovalInterval); // Hentikan agen otomatis jika pengguna terlanjur login manual
+        if (checkApprovalInterval) clearInterval(checkApprovalInterval); 
         
         currentUser = res.username;
         currentUserRole = (res.role || "petugas").toLowerCase(); 
@@ -565,18 +627,17 @@
     if(window.innerWidth <= 992) document.querySelector('.sidebar').classList.remove('active');
     
     if((pageId === 'dashboard' || pageId === 'data') && !isDataLoaded) loadDashboardData();
-    if(pageId === 'approval' && !isApprovalLoaded) loadApproval();
-  }
-
-  function getGPS(){
-    setLoader(true, "Mencari Satelit GPS...");
-    navigator.geolocation.getCurrentPosition(pos => {
-      setLoader(false);
-      document.getElementById('f_lat').value = pos.coords.latitude.toFixed(6);
-      document.getElementById('f_lng').value = pos.coords.longitude.toFixed(6);
-    }, (err) => {
-      setLoader(false); alert("GPS Gagal. Pastikan izin lokasi aktif di browser/HP Anda.");
-    }, { enableHighAccuracy: true });
+    if(pageId === 'approval') loadApproval(true);
+    
+    // Logika menampilkan halaman pengaturan khusus role
+    if(pageId === 'pengaturan') {
+      if (currentUserRole === 'admin') {
+        document.getElementById('pengaturan-admin').style.display = 'block';
+        loadUsersForReset(); 
+      } else {
+        document.getElementById('pengaturan-admin').style.display = 'none';
+      }
+    }
   }
 
   function preview(input, targetId){
@@ -589,14 +650,6 @@
       };
       r.readAsDataURL(input.files[0]);
     }
-  }
-
-  function getInputValue(ids) {
-    for (let id of ids) {
-      let el = document.getElementById(id);
-      if (el && el.value) return el.value;
-    }
-    return "";
   }
 
   async function submitData(){
@@ -709,7 +762,6 @@
         let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
         
         let btnDocs = '';
-        if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
         if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
         if(btnDocs === '') btnDocs = '-';
 
@@ -759,7 +811,6 @@
     if(forceRefresh) isApprovalLoaded = false;
     if(isApprovalLoaded && !isSilent) return;
 
-    // JIKA isSilent true, LAYAR LOADING BIRU TIDAK AKAN MUNCUL
     if(!isSilent) setLoader(true, "Memuat Daftar User...");
     try {
       let res = await fetchAPI('getAllUsers');
@@ -814,11 +865,74 @@
     let wb = XLSX.utils.table_to_book(table, {sheet:"Laporan SPAM"});
     XLSX.writeFile(wb, "Database_SPAM_Matim.xlsx");
   }
+
   function exportPDF() {
     const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
     doc.text("Database Monitoring SPAM - Manggarai Timur", 14, 15);
     doc.autoTable({ html: '#dataTable', startY: 20, styles: { fontSize: 8 }, headStyles: { fillColor: [37, 99, 235] } });
     doc.save('Database_SPAM.pdf');
+  }
+
+  // ==========================================
+  // FITUR PENGATURAN & RESET AKUN
+  // ==========================================
+  
+  function toggleDarkMode(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  let resetUserList = [];
+  async function loadUsersForReset() {
+    let select = document.getElementById('p_selectUser');
+    select.innerHTML = '<option value="">-- Memuat Data --</option>';
+    try {
+      let res = await fetchAPI('getAllUsers');
+      resetUserList = res.data || [];
+      select.innerHTML = '<option value="">-- Pilih Akun --</option>';
+      resetUserList.forEach(u => {
+        select.innerHTML += `<option value="${u.row}">${u.username} (${u.role === 'admin' ? 'Admin' : 'Petugas'})</option>`;
+      });
+    } catch (e) {
+      select.innerHTML = '<option value="">Gagal Memuat</option>';
+    }
+  }
+
+  async function resetUserAccount() {
+    const rowIdx = document.getElementById('p_selectUser').value;
+    const newUsername = document.getElementById('p_newUsername').value;
+    const newPassword = document.getElementById('p_newPassword').value;
+
+    if (!rowIdx) return alert("Pilih akun yang ingin diubah terlebih dahulu!");
+    if (!newUsername && !newPassword) return alert("Harap isi username baru atau password baru!");
+
+    if (!confirm("Peringatan: Anda yakin ingin mengubah username/password akun ini?")) return;
+
+    setLoader(true, "Menyimpan Perubahan...");
+    try {
+      let res = await fetchAPI('updateUserCredentials', { 
+        rowIdx: rowIdx, 
+        newUsername: newUsername, 
+        newPassword: newPassword 
+      });
+      setLoader(false);
+      if (res.success) {
+        alert(res.message);
+        document.getElementById('p_newUsername').value = "";
+        document.getElementById('p_newPassword').value = "";
+        loadUsersForReset(); 
+        isApprovalLoaded = false; 
+      } else {
+        alert("Gagal: " + res.message);
+      }
+    } catch (e) {
+      setLoader(false); alert("Error Sistem: " + e.message);
+    }
   }
 
   function logout(){ 
@@ -837,10 +951,9 @@
   }
 
   // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
-  // Mengecek pendaftar baru setiap 5 detik secara otomatis tanpa mengganggu layar admin
   setInterval(() => {
     if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
-      loadApproval(true, true); // forceRefresh = true, isSilent = true
+      loadApproval(true, true); 
     }
   }, 5000);
 
