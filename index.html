@@ -4,14 +4,21 @@
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
+  <!-- Identitas Web di Google -->
+  <title>SIPANDAI - Kabupaten Manggarai Timur</title>
+  <meta name="description" content="Sistem Informasi Monitoring SPAM Kabupaten Manggarai Timur. Aplikasi pendataan, pelaporan, dan pemantauan infrastruktur air minum.">
+  <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg" id="favicon">
+  <link rel="apple-touch-icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" id="apple-favicon">
+
   <!-- Frameworks & Libraries Bootstrap (Tampilan Kesukaan Anda) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
-  <!-- Libraries untuk Export Excel & PDF -->
+  <!-- Libraries untuk Export Excel, PDF & Grafik Visual -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     /* Desain UI Asli yang Clean, Rapi, dan Elegan */
@@ -45,7 +52,7 @@
     .table-bordered th, .table-bordered td { border: 1px solid #cbd5e1 !important; }
     .table-dark th { border-color: #334155 !important; }
 
-    /* DARK MODE OVERRIDES (TIDAK MERUBAH UI ASLI) */
+    /* DARK MODE OVERRIDES */
     body.dark-mode { background-color: #0f172a; color: #f8fafc; }
     body.dark-mode .bg-white, body.dark-mode .card-custom, body.dark-mode .form-section { background-color: #1e293b !important; border-color: #334155; }
     body.dark-mode .text-dark { color: #f8fafc !important; }
@@ -58,6 +65,7 @@
     body.dark-mode .table-light th { background-color: #334155 !important; color: #f8fafc; border-color: #475569; }
     body.dark-mode .table-bordered td, body.dark-mode .table-bordered th { border-color: #475569 !important; }
     body.dark-mode .table-hover tbody tr:hover { background-color: #334155; color: #f8fafc; }
+    body.dark-mode .table-borderless td, body.dark-mode .table-borderless th { border-color: transparent !important; }
     body.dark-mode .btn-outline-dark { color: #f8fafc; border-color: #f8fafc; }
     body.dark-mode .btn-outline-dark:hover { background-color: #f8fafc; color: #0f172a; }
 
@@ -80,7 +88,7 @@
 <div id="authBox">
   <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 400px; max-width: 100%;">
     <div class="mb-3">
-      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
+      <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
     </div>
     <h3 class="fw-bold m-0">SI-PAM MATIM</h3>
     <p class="text-muted small mb-4">Sistem Informasi Monitoring SPAM</p>
@@ -116,7 +124,7 @@
       <div class="w-100 text-center">
         <!-- Wadah Logo & Ikon Edit Pensil -->
         <div class="position-relative d-inline-block">
-          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
+          <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
           <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
             <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
           </button>
@@ -162,12 +170,50 @@
         <h3 class="fw-bold m-0">Dashboard Ringkasan</h3>
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
-      <div class="row g-4">
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary mt-2">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success mt-2">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger mt-2">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100"><h6 class="text-muted fw-bold">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning mt-2">0</h2></div></div>
+      
+      <!-- Kotak Angka -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary m-0">0</h2></div></div>
+        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success m-0">0</h2></div></div>
+        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger m-0">0</h2></div></div>
+        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning m-0">0</h2></div></div>
       </div>
+
+      <!-- Visualisasi Data (Grafik) -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-5">
+          <div class="card-custom shadow-sm h-100 mb-0">
+            <h6 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-chart-pie me-2 text-primary"></i>Statistik Keberfungsian</h6>
+            <div style="height: 250px; width: 100%; display: flex; justify-content: center;">
+              <canvas id="chartStatus"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-7">
+          <div class="card-custom shadow-sm h-100 mb-0">
+            <h6 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-chart-bar me-2 text-info"></i>Sebaran SPAM per Kecamatan</h6>
+            <div style="height: 250px; width: 100%;">
+              <canvas id="chartKecamatan"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log Aktivitas Terbaru -->
+      <div class="card-custom shadow-sm mb-0">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+          <h6 class="fw-bold m-0"><i class="fas fa-clock me-2 text-success"></i>5 Laporan Terakhir Masuk</h6>
+          <button class="btn btn-sm btn-light border" onclick="showPage('data')">Lihat Semua</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-borderless table-hover align-middle mb-0 small">
+            <tbody id="t-recent">
+               <tr><td class="text-muted text-center py-3">Memuat laporan terbaru...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
     <!-- PAGE: FORM INPUT -->
@@ -303,7 +349,7 @@
 
     <!-- PAGE: MANAJEMEN USER & APPROVAL (ADMIN) -->
     <div id="page-approval" style="display:none">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold m-0">Manajemen & Persetujuan Akun</h3>
         <button class="btn btn-sm btn-outline-primary shadow-sm" onclick="loadApproval(true)"><i class="fas fa-sync"></i> Refresh</button>
       </div>
@@ -357,7 +403,7 @@
       </div>
     </div>
 
-    <!-- PAGE: PENGATURAN & AKUN (BARU) -->
+    <!-- PAGE: PENGATURAN & AKUN -->
     <div id="page-pengaturan" style="display:none">
       <h3 class="fw-bold mb-4">Pengaturan & Akun</h3>
       <div class="row g-4">
@@ -411,7 +457,7 @@
   // =========================================================================
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
 
-  // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (TIDAK BOLEH DIHAPUS)
+  // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (FETCH API)
   async function fetchAPI(action, payload = {}) {
     if (!SCRIPT_URL || SCRIPT_URL === "") {
       alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris kode!");
@@ -440,11 +486,12 @@
   let isApprovalLoaded = false;
   let checkApprovalInterval = null; 
 
+  // Variabel Global untuk Grafik
+  let chartStatus = null;
+  let chartKecamatan = null;
+
   window.onload = async function() {
-    // Cek Local Storage untuk Mode Gelap saat pertama kali buka web
-    if (localStorage.getItem('theme') === 'dark') {
-      toggleDarkMode(true);
-    }
+    if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
     try {
       let res = await fetchAPI('getAppLogo');
@@ -455,8 +502,10 @@
           let fileId = finalUrl.split("id=")[1].split("&")[0];
           finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
-        document.getElementById('login-logo').src = finalUrl;
-        document.getElementById('sidebar-logo').src = finalUrl;
+        let loginLogo = document.getElementById('login-logo');
+        if(loginLogo) loginLogo.src = finalUrl;
+        let sidebarLogo = document.getElementById('sidebar-logo');
+        if(sidebarLogo) sidebarLogo.src = finalUrl;
         
         // Memasang logo ke tab browser secara otomatis (Favicon)
         let linkIcon = document.getElementById("favicon");
@@ -476,8 +525,10 @@
       let reader = new FileReader();
       reader.onload = async e => {
         let base64 = e.target.result;
-        document.getElementById('login-logo').src = base64;
-        document.getElementById('sidebar-logo').src = base64;
+        let loginLogo = document.getElementById('login-logo');
+        if(loginLogo) loginLogo.src = base64;
+        let sidebarLogo = document.getElementById('sidebar-logo');
+        if(sidebarLogo) sidebarLogo.src = base64;
         
         setLoader(true, "Mengunggah Logo ke Server...");
         try {
@@ -533,7 +584,6 @@
 
         if (checkApprovalInterval) clearInterval(checkApprovalInterval);
 
-        // Agen Pemeriksa
         checkApprovalInterval = setInterval(async () => {
           try {
             let loginRes = await fetchAPI('loginUser', { u: u, p: p });
@@ -705,6 +755,57 @@
     if(btn){ btn.innerHTML = `<i class="fas fa-paper-plane me-2"></i> SIMPAN DATABASE`; btn.className = 'btn btn-primary w-100 py-3 mt-3 fw-bold rounded-pill shadow'; }
   }
 
+  function renderCharts(baik, sebagian, rusak, dataKecamatan) {
+    const isDark = document.body.classList.contains('dark-mode');
+    Chart.defaults.color = isDark ? '#94a3b8' : '#475569';
+    Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+    const ctxStatus = document.getElementById('chartStatus');
+    if(ctxStatus) {
+      if(chartStatus) chartStatus.destroy();
+      chartStatus = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['Berfungsi Baik', 'Sebagian', 'Rusak/Tidak Berfungsi'],
+          datasets: [{
+            data: [baik, sebagian, rusak],
+            backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } },
+          cutout: '65%'
+        }
+      });
+    }
+
+    const ctxKec = document.getElementById('chartKecamatan');
+    if(ctxKec) {
+      if(chartKecamatan) chartKecamatan.destroy();
+      chartKecamatan = new Chart(ctxKec, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(dataKecamatan),
+          datasets: [{
+            label: 'Jumlah Unit SPAM', data: Object.values(dataKecamatan),
+            backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex', maxBarThickness: 40
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: isDark ? '#334155' : '#e2e8f0' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+  }
+
   async function loadDashboardData(forceRefresh = false){
     if(forceRefresh) isDataLoaded = false;
     if(isDataLoaded) return;
@@ -721,16 +822,24 @@
       if(!data || data.length === 0) {
         document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
         document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; return;
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; 
+        document.getElementById('t-recent').innerHTML = '<tr><td class="text-muted text-center py-3">Belum ada laporan masuk.</td></tr>';
+        renderCharts(0, 0, 0, {}); 
+        return;
       }
       
-      let countBaik = 0; let countRusak = 0; let totalJiwa = 0;
+      let countBaik = 0; let countSebagian = 0; let countRusak = 0; 
+      let totalJiwa = 0; let dataKecamatan = {};
       windowAllReports = data.reverse(); 
 
       const htmlRows = windowAllReports.map((r, index) => {
         let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
-        if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) {
+        let sLow = status.toLowerCase();
+        
+        if(sLow.includes('semua') || sLow.includes('baik')) {
           countBaik++; status = `<span class="badge bg-success">${status}</span>`;
+        } else if (sLow.includes('sebagian')) {
+          countSebagian++; countRusak++; status = `<span class="badge bg-warning text-dark">${status}</span>`;
         } else if (status !== "-") {
           countRusak++; status = `<span class="badge bg-danger">${status}</span>`;
         }
@@ -738,11 +847,14 @@
         let jiwa = parseInt(getSafeVal(r, 'JumlahJiwa', 'Jiwa')) || 0;
         totalJiwa += jiwa;
 
+        let kec = getSafeVal(r, 'Kecamatan');
+        if(kec !== '-' && kec !== '') { dataKecamatan[kec] = (dataKecamatan[kec] || 0) + 1; }
+
         let tglStr = getSafeVal(r, 'Timestamp', 'Waktu');
         let dateFormated = tglStr;
         try { if (tglStr !== "-" && tglStr !== "") { let d = new Date(tglStr); if (!isNaN(d.getTime())) dateFormated = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
 
-        let kec = getSafeVal(r, 'Kecamatan'); let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
+        let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
         let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun');
         let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
         
@@ -762,9 +874,32 @@
 
       document.getElementById('s-total').innerText = data.length;
       document.getElementById('s-baik').innerText = countBaik;
-      document.getElementById('s-rusak').innerText = countRusak;
+      document.getElementById('s-rusak').innerText = countRusak; 
       document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
+      
       tbody.innerHTML = htmlRows;
+      renderCharts(countBaik, countSebagian, (countRusak - countSebagian), dataKecamatan);
+
+      let recentData = windowAllReports.slice(0, 5);
+      let recentHTML = recentData.map(r => {
+        let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
+        try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID', {dateStyle:'short', timeStyle:'short'}); } } catch(e){}
+        let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM');
+        let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
+        let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
+        
+        let bClass = 'bg-danger'; let bText = 'Rusak';
+        if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) { bClass = 'bg-success'; bText = 'Baik'; }
+        else if(status.toLowerCase().includes('sebagian')) { bClass = 'bg-warning text-dark'; bText = 'Sebagian'; }
+
+        return `<tr>
+          <td class="text-muted" style="width: 140px;"><i class="fas fa-calendar-alt me-2"></i>${dStr}</td>
+          <td class="fw-bold text-primary">${spam} <span class="text-muted fw-normal small ms-1">(${desa})</span></td>
+          <td class="text-end"><span class="badge ${bClass}">${bText}</span></td>
+        </tr>`;
+      }).join('');
+      document.getElementById('t-recent').innerHTML = recentHTML;
+
     } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
   }
 
@@ -822,7 +957,6 @@
         } else {
            actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
         }
-        // PERBAIKAN: Memaksa teks username menjadi hitam (color: #000000) agar selalu terlihat di tabel
         return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
       }).join('');
     } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
@@ -873,6 +1007,16 @@
     } else {
       document.body.classList.remove('dark-mode');
       localStorage.setItem('theme', 'light');
+    }
+    
+    // Refresh warna grafik
+    if(document.getElementById('page-dashboard').style.display === 'block' && isDataLoaded) {
+        Chart.defaults.color = isDark ? '#94a3b8' : '#475569';
+        if(chartStatus) chartStatus.update();
+        if(chartKecamatan) {
+            chartKecamatan.options.scales.y.grid.color = isDark ? '#334155' : '#e2e8f0';
+            chartKecamatan.update();
+        }
     }
   }
 
