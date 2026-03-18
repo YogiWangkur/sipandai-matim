@@ -171,12 +171,10 @@
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
       
-      <!-- Kotak Angka -->
+      <!-- PERBAIKAN: Kotak Angka Disisakan Menjadi 2 Saja agar Lebih Lega -->
       <div class="row g-4 mb-4">
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary m-0">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-success border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">BERFUNGSI BAIK</h6><h2 id="s-baik" class="fw-bold text-success m-0">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-danger border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">RUSAK / MASALAH</h6><h2 id="s-rusak" class="fw-bold text-danger m-0">0</h2></div></div>
-        <div class="col-md-3 col-6"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning m-0">0</h2></div></div>
+        <div class="col-md-6 col-6"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary m-0">0</h2></div></div>
+        <div class="col-md-6 col-6"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning m-0">0</h2></div></div>
       </div>
 
       <!-- Visualisasi Data (Grafik) -->
@@ -490,6 +488,10 @@
   let chartStatus = null;
   let chartKecamatan = null;
 
+  // Variabel Pintar untuk mencegah kedipan layar
+  let previousDataString = "";
+  let previousApprovalString = "";
+
   window.onload = async function() {
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
@@ -739,7 +741,10 @@
       if(res.success){
         alert("Berhasil! Database tersimpan.");
         clearForm();
+        // Memaksa sistem untuk me-refresh data terbaru
         isDataLoaded = false; 
+        loadDashboardData(true); 
+        
         if (currentUserRole === 'admin') showPage('data');
         else showPage('form');
       } else { alert("Gagal: " + res.message); }
@@ -762,66 +767,82 @@
 
     const ctxStatus = document.getElementById('chartStatus');
     if(ctxStatus) {
-      if(chartStatus) chartStatus.destroy();
-      chartStatus = new Chart(ctxStatus, {
-        type: 'doughnut',
-        data: {
-          labels: ['Berfungsi Baik', 'Sebagian', 'Rusak/Tidak Berfungsi'],
-          datasets: [{
-            data: [baik, sebagian, rusak],
-            backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
-            borderWidth: 0,
-            hoverOffset: 4
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } },
-          cutout: '65%'
-        }
-      });
+      if(chartStatus) {
+        // Hanya update angka agar grafik bergerak mulus (tidak diulang dari 0)
+        chartStatus.data.datasets[0].data = [baik, sebagian, rusak];
+        chartStatus.update();
+      } else {
+        chartStatus = new Chart(ctxStatus, {
+          type: 'doughnut',
+          data: {
+            labels: ['Berfungsi Baik', 'Sebagian', 'Rusak/Tidak Berfungsi'],
+            datasets: [{
+              data: [baik, sebagian, rusak],
+              backgroundColor: ['#22c55e', '#eab308', '#ef4444'],
+              borderWidth: 0, hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } },
+            cutout: '65%'
+          }
+        });
+      }
     }
 
     const ctxKec = document.getElementById('chartKecamatan');
     if(ctxKec) {
-      if(chartKecamatan) chartKecamatan.destroy();
-      chartKecamatan = new Chart(ctxKec, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(dataKecamatan),
-          datasets: [{
-            label: 'Jumlah Unit SPAM', data: Object.values(dataKecamatan),
-            backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex', maxBarThickness: 40
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: isDark ? '#334155' : '#e2e8f0' } },
-            x: { grid: { display: false } }
+      if(chartKecamatan) {
+        chartKecamatan.data.labels = Object.keys(dataKecamatan);
+        chartKecamatan.data.datasets[0].data = Object.values(dataKecamatan);
+        chartKecamatan.options.scales.y.grid.color = isDark ? '#334155' : '#e2e8f0';
+        chartKecamatan.update();
+      } else {
+        chartKecamatan = new Chart(ctxKec, {
+          type: 'bar',
+          data: {
+            labels: Object.keys(dataKecamatan),
+            datasets: [{
+              label: 'Jumlah Unit SPAM', data: Object.values(dataKecamatan),
+              backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex', maxBarThickness: 40
+            }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: isDark ? '#334155' : '#e2e8f0' } },
+              x: { grid: { display: false } }
+            }
           }
-        }
-      });
+        });
+      }
     }
   }
 
-  async function loadDashboardData(forceRefresh = false){
+  async function loadDashboardData(forceRefresh = false, isSilent = false){
     if(forceRefresh) isDataLoaded = false;
-    if(isDataLoaded) return;
+    if(isDataLoaded && !isSilent) return;
 
-    setLoader(true, "Menarik Data...");
+    if(!isSilent) setLoader(true, "Menarik Data...");
     try {
       let res = await fetchAPI('getLaporan');
       let data = res.data || [];
       
-      setLoader(false);
+      // Cek Pintar: Jika tidak ada perubahan data, batalkan update UI agar layar tidak kedip
+      let currentDataString = JSON.stringify(data);
+      if(isSilent && currentDataString === previousDataString) return; 
+      previousDataString = currentDataString;
+      
+      if(!isSilent) setLoader(false);
       isDataLoaded = true; 
+      
       const tbody = document.getElementById('t-body');
       
       if(!data || data.length === 0) {
-        document.getElementById('s-total').innerText = "0"; document.getElementById('s-baik').innerText = "0";
-        document.getElementById('s-rusak').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
+        document.getElementById('s-total').innerText = "0"; 
+        document.getElementById('s-jiwa').innerText = "0";
         tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; 
         document.getElementById('t-recent').innerHTML = '<tr><td class="text-muted text-center py-3">Belum ada laporan masuk.</td></tr>';
         renderCharts(0, 0, 0, {}); 
@@ -873,8 +894,6 @@
       }).join('');
 
       document.getElementById('s-total').innerText = data.length;
-      document.getElementById('s-baik').innerText = countBaik;
-      document.getElementById('s-rusak').innerText = countRusak; 
       document.getElementById('s-jiwa').innerText = totalJiwa.toLocaleString('id-ID');
       
       tbody.innerHTML = htmlRows;
@@ -900,7 +919,7 @@
       }).join('');
       document.getElementById('t-recent').innerHTML = recentHTML;
 
-    } catch(err) { setLoader(false); alert("Gagal memuat data: " + err.message); }
+    } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
   }
 
   function editLaporan(index) {
@@ -939,9 +958,13 @@
       let res = await fetchAPI('getAllUsers');
       let data = res.data || [];
       
+      let currentDataString = JSON.stringify(data);
+      if(isSilent && currentDataString === previousApprovalString) return; 
+      previousApprovalString = currentDataString;
+
       if(!isSilent) setLoader(false);
-      
       isApprovalLoaded = true; 
+
       let tb = document.getElementById('t-approval');
       if(!data || data.length === 0) { tb.innerHTML = `<tr><td colspan="4" class="text-center p-4">Belum ada user mendaftar.</td></tr>`; return; }
       
@@ -1085,8 +1108,13 @@
 
   // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
   setInterval(() => {
+    // 1. Cek User Baru Otomatis di halaman Manajemen User
     if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
       loadApproval(true, true); 
+    }
+    // 2. Tarik Laporan Terbaru Otomatis di Dashboard & Riwayat Data
+    if (document.getElementById('page-dashboard').style.display === 'block' || document.getElementById('page-data').style.display === 'block') {
+      loadDashboardData(true, true);
     }
   }, 5000);
 
