@@ -494,12 +494,13 @@
         <!-- Manajemen Tautan Layanan (Khusus Admin) -->
         <div class="col-md-12" id="pengaturan-layanan" style="display:none">
           <div class="card-custom shadow-sm h-100 border-top border-info border-4">
-            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-link me-2 text-info"></i>Pengaturan Tautan Layanan (Admin)</h5>
-            <p class="text-muted small">Masukkan link agar menu "Pusat Layanan" di beranda bisa diklik oleh masyarakat dan petugas.</p>
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-cog me-2 text-info"></i>Pengaturan Layanan (Admin)</h5>
+            <p class="text-muted small">Atur dokumen dan tautan agar menu "Pusat Layanan" di beranda bisa diakses oleh masyarakat dan petugas.</p>
             <div class="row g-3">
               <div class="col-md-4">
-                <label class="form-label small fw-bold">Link PDF Buku Panduan</label>
-                <input type="text" id="p_linkPanduan" class="form-control" placeholder="Contoh: https://drive.google.com/...">
+                <label class="form-label small fw-bold">Upload Buku Panduan (PDF/Word)</label>
+                <input type="file" id="p_filePanduan" class="form-control" accept=".pdf,.doc,.docx" onchange="handlePanduanFile(this)">
+                <small id="p_fileStatus" class="text-muted d-block mt-1" style="font-size: 0.75rem;">Kosongkan jika tidak ingin mengubah file saat ini.</small>
               </div>
               <div class="col-md-4">
                 <label class="form-label small fw-bold">Link Video Tutorial</label>
@@ -510,7 +511,7 @@
                 <input type="text" id="p_kontakWa" class="form-control" placeholder="Contoh: 6281234567890">
               </div>
             </div>
-            <button class="btn btn-info w-100 fw-bold text-white shadow-sm mt-3" onclick="simpanTautanLayanan()"><i class="fas fa-save me-2"></i> Simpan Tautan Layanan</button>
+            <button class="btn btn-info w-100 fw-bold text-white shadow-sm mt-3" onclick="simpanTautanLayanan()"><i class="fas fa-save me-2"></i> Simpan Pengaturan Layanan</button>
           </div>
         </div>
 
@@ -560,6 +561,7 @@
   let linkPanduan = "";
   let linkVideo = "";
   let kontakWa = "";
+  let panduanBase64 = ""; // Tambahan untuk memori upload dokumen
 
   // Variabel Global untuk Grafik
   let chartStatus = null;
@@ -772,9 +774,12 @@
         document.getElementById('pengaturan-layanan').style.display = 'block';
         
         // Isi otomatis kotak form dengan link yang sudah tersimpan
-        document.getElementById('p_linkPanduan').value = linkPanduan;
         document.getElementById('p_linkVideo').value = linkVideo;
         document.getElementById('p_kontakWa').value = kontakWa;
+
+        // Reset form file upload
+        document.getElementById('p_filePanduan').value = "";
+        document.getElementById('p_fileStatus').innerText = linkPanduan ? "Buku panduan sudah tersimpan di database. Upload file baru untuk menimpa." : "Belum ada file panduan yang tersimpan.";
 
         loadUsersForReset(); 
       } else {
@@ -1262,7 +1267,7 @@
   function bukaLayanan(jenis) {
     if (jenis === 'panduan') {
       if (linkPanduan && linkPanduan.length > 5) window.open(linkPanduan, '_blank');
-      else alert('Tautan Buku Panduan belum diatur oleh Admin.');
+      else alert('Buku Panduan belum diunggah oleh Admin.');
     } else if (jenis === 'video') {
       if (linkVideo && linkVideo.length > 5) window.open(linkVideo, '_blank');
       else alert('Tautan Video Tutorial belum diatur oleh Admin.');
@@ -1275,18 +1280,46 @@
     }
   }
 
+  function handlePanduanFile(input) {
+    if(input.files && input.files[0]) {
+      let file = input.files[0];
+      if(file.size > 5 * 1024 * 1024) { // Batas 5MB agar aman
+        alert("Ukuran file maksimal 5MB! Silakan kompres PDF Anda terlebih dahulu.");
+        input.value = "";
+        panduanBase64 = "";
+        document.getElementById('p_fileStatus').innerText = "File terlalu besar. Silakan pilih file lain.";
+        return;
+      }
+      let reader = new FileReader();
+      reader.onload = e => {
+        panduanBase64 = e.target.result;
+        document.getElementById('p_fileStatus').innerText = "File siap disimpan: " + file.name;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      panduanBase64 = "";
+      document.getElementById('p_fileStatus').innerText = linkPanduan ? "Kosongkan jika tidak ingin mengganti file yang sudah ada." : "Kosongkan jika tidak ingin mengubah.";
+    }
+  }
+
   async function simpanTautanLayanan() {
-    const p = document.getElementById('p_linkPanduan').value;
     const v = document.getElementById('p_linkVideo').value;
     const w = document.getElementById('p_kontakWa').value;
     
-    setLoader(true, "Menyimpan Tautan Layanan...");
+    setLoader(true, panduanBase64 ? "Mengunggah Dokumen & Menyimpan..." : "Menyimpan Pengaturan Layanan...");
     try {
-      let res = await fetchAPI('updateTautanLayanan', { panduan: p, video: v, wa: w });
+      // Mengirim file base64 ke server
+      let res = await fetchAPI('updateTautanLayanan', { panduanBase64: panduanBase64, video: v, wa: w });
       setLoader(false);
       if (res.success) {
-        alert("Tautan Layanan berhasil disimpan!");
-        linkPanduan = p; linkVideo = v; kontakWa = w;
+        alert("Pengaturan Layanan berhasil disimpan!");
+        if(res.newPanduanUrl) linkPanduan = res.newPanduanUrl; // Simpan link baru hasil upload
+        linkVideo = v; kontakWa = w;
+        
+        // Reset input file agar tidak terupload ulang secara tidak sengaja
+        panduanBase64 = "";
+        document.getElementById('p_filePanduan').value = "";
+        document.getElementById('p_fileStatus').innerText = "File panduan berhasil diperbarui dan tersimpan.";
       } else {
         alert("Gagal: " + res.message);
       }
