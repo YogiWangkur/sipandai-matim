@@ -100,7 +100,7 @@
           <i class="fas fa-book fa-3x text-primary mb-3 mt-2"></i>
           <h5 class="fw-bold text-dark">Buku Panduan</h5>
           <p class="text-muted small">Unduh panduan lengkap pengisian database.</p>
-          <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="alert('File PDF Buku Panduan akan tersedia segera.')"><i class="fas fa-download"></i> Download PDF</button>
+          <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="bukaLayanan('panduan')"><i class="fas fa-download"></i> Download PDF</button>
         </div>
       </div>
       <div class="col-md-4">
@@ -108,7 +108,7 @@
           <i class="fab fa-youtube fa-3x text-danger mb-3 mt-2"></i>
           <h5 class="fw-bold text-dark">Video Tutorial</h5>
           <p class="text-muted small">Tonton cara menggunakan aplikasi SIPANDAI.</p>
-          <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="alert('Video panduan sedang dalam proses editing.')"><i class="fas fa-play"></i> Tonton Video</button>
+          <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="bukaLayanan('video')"><i class="fas fa-play"></i> Tonton Video</button>
         </div>
       </div>
       <div class="col-md-4">
@@ -116,7 +116,7 @@
           <i class="fas fa-headset fa-3x text-success mb-3 mt-2"></i>
           <h5 class="fw-bold text-dark">Contact Person</h5>
           <p class="text-muted small">Hubungi Admin jika ada masalah teknis.</p>
-          <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-success btn-sm rounded-pill mt-2"><i class="fab fa-whatsapp"></i> Chat Admin</a>
+          <button class="btn btn-success btn-sm rounded-pill mt-2" onclick="bukaLayanan('wa')"><i class="fab fa-whatsapp"></i> Chat Admin</button>
         </div>
       </div>
     </div>
@@ -428,7 +428,7 @@
             <i class="fas fa-book fa-3x text-primary mb-3 mt-2"></i>
             <h5 class="fw-bold">Buku Panduan</h5>
             <p class="text-muted small">Unduh panduan lengkap pengisian database.</p>
-            <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="alert('File PDF Buku Panduan akan tersedia segera.')"><i class="fas fa-download"></i> Download PDF</button>
+            <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" onclick="bukaLayanan('panduan')"><i class="fas fa-download"></i> Download PDF</button>
           </div>
         </div>
         <div class="col-md-4">
@@ -436,7 +436,7 @@
             <i class="fab fa-youtube fa-3x text-danger mb-3 mt-2"></i>
             <h5 class="fw-bold">Video Tutorial</h5>
             <p class="text-muted small">Tonton cara menggunakan aplikasi SIPANDAI.</p>
-            <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="alert('Video panduan sedang dalam proses editing.')"><i class="fas fa-play"></i> Tonton Video</button>
+            <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="bukaLayanan('video')"><i class="fas fa-play"></i> Tonton Video</button>
           </div>
         </div>
         <div class="col-md-4">
@@ -444,7 +444,7 @@
             <i class="fas fa-headset fa-3x text-success mb-3 mt-2"></i>
             <h5 class="fw-bold">Contact Person</h5>
             <p class="text-muted small">Hubungi Admin jika ada masalah teknis.</p>
-            <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-success btn-sm rounded-pill mt-2"><i class="fab fa-whatsapp"></i> Chat Admin</a>
+            <button class="btn btn-success btn-sm rounded-pill mt-2" onclick="bukaLayanan('wa')"><i class="fab fa-whatsapp"></i> Chat Admin</button>
           </div>
         </div>
       </div>
@@ -491,6 +491,29 @@
           </div>
         </div>
 
+        <!-- Manajemen Tautan Layanan (Khusus Admin) -->
+        <div class="col-md-12" id="pengaturan-layanan" style="display:none">
+          <div class="card-custom shadow-sm h-100 border-top border-info border-4">
+            <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-link me-2 text-info"></i>Pengaturan Tautan Layanan (Admin)</h5>
+            <p class="text-muted small">Masukkan link agar menu "Pusat Layanan" di beranda bisa diklik oleh masyarakat dan petugas.</p>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Link PDF Buku Panduan</label>
+                <input type="text" id="p_linkPanduan" class="form-control" placeholder="Contoh: https://drive.google.com/...">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Link Video Tutorial</label>
+                <input type="text" id="p_linkVideo" class="form-control" placeholder="Contoh: https://youtube.com/...">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small fw-bold">Nomor WhatsApp Admin</label>
+                <input type="text" id="p_kontakWa" class="form-control" placeholder="Contoh: 6281234567890">
+              </div>
+            </div>
+            <button class="btn btn-info w-100 fw-bold text-white shadow-sm mt-3" onclick="simpanTautanLayanan()"><i class="fas fa-save me-2"></i> Simpan Tautan Layanan</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -533,6 +556,11 @@
   let isApprovalLoaded = false;
   let checkApprovalInterval = null; 
 
+  // Variabel Global Tautan Layanan
+  let linkPanduan = "";
+  let linkVideo = "";
+  let kontakWa = "";
+
   // Variabel Global untuk Grafik
   let chartStatus = null;
   let chartKecamatan = null;
@@ -545,6 +573,15 @@
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
     try {
+      // Mengambil tautan layanan di latar belakang
+      fetchAPI('getTautanLayanan').then(res => {
+        if(res.success && res.data) {
+          linkPanduan = res.data.panduan || "";
+          linkVideo = res.data.video || "";
+          kontakWa = res.data.wa || "";
+        }
+      });
+
       let res = await fetchAPI('getAppLogo');
       let url = res.url;
       if(url && url.length > 5) {
@@ -732,9 +769,17 @@
     if(pageId === 'pengaturan') {
       if (currentUserRole === 'admin') {
         document.getElementById('pengaturan-admin').style.display = 'block';
+        document.getElementById('pengaturan-layanan').style.display = 'block';
+        
+        // Isi otomatis kotak form dengan link yang sudah tersimpan
+        document.getElementById('p_linkPanduan').value = linkPanduan;
+        document.getElementById('p_linkVideo').value = linkVideo;
+        document.getElementById('p_kontakWa').value = kontakWa;
+
         loadUsersForReset(); 
       } else {
         document.getElementById('pengaturan-admin').style.display = 'none';
+        document.getElementById('pengaturan-layanan').style.display = 'none';
       }
     }
   }
@@ -1205,6 +1250,43 @@
         document.getElementById('p_newPassword').value = "";
         loadUsersForReset(); 
         isApprovalLoaded = false; 
+      } else {
+        alert("Gagal: " + res.message);
+      }
+    } catch (e) {
+      setLoader(false); alert("Error Sistem: " + e.message);
+    }
+  }
+
+  // FITUR PENGATURAN TAUTAN LAYANAN & BANTUAN
+  function bukaLayanan(jenis) {
+    if (jenis === 'panduan') {
+      if (linkPanduan && linkPanduan.length > 5) window.open(linkPanduan, '_blank');
+      else alert('Tautan Buku Panduan belum diatur oleh Admin.');
+    } else if (jenis === 'video') {
+      if (linkVideo && linkVideo.length > 5) window.open(linkVideo, '_blank');
+      else alert('Tautan Video Tutorial belum diatur oleh Admin.');
+    } else if (jenis === 'wa') {
+      if (kontakWa && kontakWa.length > 5) {
+        let waNum = kontakWa.replace(/\D/g, ''); // Hapus semua karakter non-angka
+        if(waNum.startsWith('0')) waNum = '62' + waNum.substring(1); // Ganti 0 depan jadi 62
+        window.open('https://wa.me/' + waNum, '_blank');
+      } else alert('Nomor WhatsApp belum diatur oleh Admin.');
+    }
+  }
+
+  async function simpanTautanLayanan() {
+    const p = document.getElementById('p_linkPanduan').value;
+    const v = document.getElementById('p_linkVideo').value;
+    const w = document.getElementById('p_kontakWa').value;
+    
+    setLoader(true, "Menyimpan Tautan Layanan...");
+    try {
+      let res = await fetchAPI('updateTautanLayanan', { panduan: p, video: v, wa: w });
+      setLoader(false);
+      if (res.success) {
+        alert("Tautan Layanan berhasil disimpan!");
+        linkPanduan = p; linkVideo = v; kontakWa = w;
       } else {
         alert("Gagal: " + res.message);
       }
