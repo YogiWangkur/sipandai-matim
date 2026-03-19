@@ -86,12 +86,13 @@
 
 <!-- AUTH SECTION (LOGIN & DAFTAR) -->
 <div id="authBox">
-  <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 400px; max-width: 100%;">
+  <div class="bg-white p-4 p-md-5 rounded-4 shadow-lg text-center" style="width: 450px; max-width: 100%;">
     <div class="mb-3">
       <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
     </div>
-    <h3 class="fw-bold m-0">SI-PAM MATIM</h3>
-    <p class="text-muted small mb-4">Sistem Informasi Monitoring SPAM</p>
+    <!-- PERUBAHAN TEKS LOGIN -->
+    <h3 class="fw-bold m-0">SIPANDAI MATIM</h3>
+    <p class="text-muted small mb-4" style="line-height: 1.4;">SISTEM PELAPORAN DATA AIR MINUM TERINTEGRASI MANGGARAI TIMUR</p>
     
     <!-- Form Login -->
     <div id="form-login" class="text-start">
@@ -103,11 +104,13 @@
       <div class="text-center small">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-decoration-none fw-bold">Daftar di sini</a></div>
     </div>
 
-    <!-- Form Register -->
+    <!-- Form Register (KINI DENGAN EMAIL) -->
     <div id="form-register" class="text-start" style="display:none;">
       <div class="alert alert-info py-2 small"><i class="fas fa-info-circle"></i> Akun butuh persetujuan Admin sebelum bisa login.</div>
       <label class="small fw-bold mb-1">Buat Username</label>
-      <input type="text" id="r-user" class="form-control mb-3" placeholder="Username baru">
+      <input type="text" id="r-user" class="form-control mb-2" placeholder="Username baru">
+      <label class="small fw-bold mb-1">Alamat Email</label>
+      <input type="email" id="r-email" class="form-control mb-2" placeholder="Email aktif Anda">
       <label class="small fw-bold mb-1">Buat Password</label>
       <input type="password" id="r-pass" class="form-control mb-4" placeholder="Password baru">
       <button type="button" class="btn btn-success w-100 py-2 fw-bold mb-3" onclick="doRegister()">DAFTAR AKUN</button>
@@ -129,7 +132,8 @@
             <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
           </button>
         </div>
-        <h4 class="fw-bold m-0 text-white">SI-PAM</h4>
+        <!-- PERUBAHAN TEKS SIDEBAR -->
+        <h4 class="fw-bold m-0 text-white">SIPANDAI</h4>
         <small class="text-info">Manggarai Timur</small>
       </div>
       <button class="btn text-white d-lg-none position-absolute" style="right: 15px; top: 15px;" onclick="toggleSidebar()"><i class="fas fa-times fa-lg"></i></button>
@@ -160,7 +164,8 @@
 
   <div class="main-content">
     <div class="mobile-topbar">
-      <h5 class="m-0 fw-bold"><i class="fas fa-tint me-2"></i> SI-PAM MATIM</h5>
+      <!-- PERUBAHAN TEKS MOBILE -->
+      <h5 class="m-0 fw-bold"><i class="fas fa-tint me-2"></i> SIPANDAI MATIM</h5>
       <button class="btn text-white p-0 border-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-2x"></i></button>
     </div>
 
@@ -171,7 +176,6 @@
         <span id="displayUser" class="badge bg-white border text-dark p-2 shadow-sm">User: Admin</span>
       </div>
       
-      <!-- PERBAIKAN: Kotak Angka Disisakan Menjadi 2 Saja agar Lebih Lega -->
       <div class="row g-4 mb-4">
         <div class="col-md-6 col-6"><div class="card-custom text-center border-start border-primary border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">TOTAL LAPORAN</h6><h2 id="s-total" class="fw-bold text-primary m-0">0</h2></div></div>
         <div class="col-md-6 col-6"><div class="card-custom text-center border-start border-warning border-4 shadow-sm h-100 mb-0"><h6 class="text-muted fw-bold small mb-1">JUMLAH JIWA</h6><h2 id="s-jiwa" class="fw-bold text-warning m-0">0</h2></div></div>
@@ -356,7 +360,7 @@
           <table class="table table-hover table-bordered align-middle m-0 table-nowrap">
             <thead class="table-light">
               <tr>
-                <th class="ps-4">Username</th>
+                <th class="ps-4">Username & Email</th>
                 <th>Role</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -386,7 +390,7 @@
           <div class="card-custom text-center h-100 shadow-sm border-top border-danger border-4">
             <i class="fab fa-youtube fa-3x text-danger mb-3 mt-2"></i>
             <h5 class="fw-bold">Video Tutorial</h5>
-            <p class="text-muted small">Tonton cara menggunakan aplikasi SI-PAM.</p>
+            <p class="text-muted small">Tonton cara menggunakan aplikasi SIPANDAI.</p>
             <button class="btn btn-outline-danger btn-sm rounded-pill mt-2" onclick="alert('Video panduan sedang dalam proses editing.')"><i class="fas fa-play"></i> Tonton Video</button>
           </div>
         </div>
@@ -509,7 +513,6 @@
         let sidebarLogo = document.getElementById('sidebar-logo');
         if(sidebarLogo) sidebarLogo.src = finalUrl;
         
-        // Memasang logo ke tab browser secara otomatis (Favicon)
         let linkIcon = document.getElementById("favicon");
         if (linkIcon) linkIcon.href = finalUrl;
         let linkApple = document.getElementById("apple-favicon");
@@ -569,12 +572,15 @@
 
   async function doRegister() {
     const u = document.getElementById('r-user').value;
+    const e_mail = document.getElementById('r-email').value; // Mengambil data email
     const p = document.getElementById('r-pass').value;
-    if(!u || !p) return alert("Isi username dan password");
+    
+    if(!u || !e_mail || !p) return alert("Harap isi username, email, dan password dengan lengkap!");
     
     setLoader(true, "Mendaftarkan Akun...");
     try {
-      let res = await fetchAPI('registerUser', { u: u, p: p });
+      // Mengirim payload 'e' (email) ke server App Script
+      let res = await fetchAPI('registerUser', { u: u, e: e_mail, p: p });
       setLoader(false);
       
       if(res.success) {
@@ -610,7 +616,7 @@
               document.getElementById('authBox').style.display = 'none';
               document.getElementById('mainApp').style.display = 'block';
               
-              alert("Hore! Akun Anda telah disetujui oleh Admin. Selamat datang di SI-PAM.");
+              alert("Hore! Akun Anda telah disetujui oleh Admin. Selamat datang di SIPANDAI.");
             }
           } catch(e) {} 
         }, 5000);
@@ -741,7 +747,6 @@
       if(res.success){
         alert("Berhasil! Database tersimpan.");
         clearForm();
-        // Memaksa sistem untuk me-refresh data terbaru
         isDataLoaded = false; 
         loadDashboardData(true); 
         
@@ -768,7 +773,6 @@
     const ctxStatus = document.getElementById('chartStatus');
     if(ctxStatus) {
       if(chartStatus) {
-        // Hanya update angka agar grafik bergerak mulus (tidak diulang dari 0)
         chartStatus.data.datasets[0].data = [baik, sebagian, rusak];
         chartStatus.update();
       } else {
@@ -830,7 +834,6 @@
       let res = await fetchAPI('getLaporan');
       let data = res.data || [];
       
-      // Cek Pintar: Jika tidak ada perubahan data, batalkan update UI agar layar tidak kedip
       let currentDataString = JSON.stringify(data);
       if(isSilent && currentDataString === previousDataString) return; 
       previousDataString = currentDataString;
@@ -980,7 +983,11 @@
         } else {
            actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
         }
-        return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
+        
+        // Memunculkan Email tepat di bawah Username jika ada
+        let emailText = u.email ? `<br><small class="text-muted fw-normal" style="font-size: 0.75rem;"><i class="fas fa-envelope me-1"></i>${u.email}</small>` : '';
+        
+        return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}${emailText}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
       }).join('');
     } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
   }
@@ -1108,11 +1115,9 @@
 
   // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
   setInterval(() => {
-    // 1. Cek User Baru Otomatis di halaman Manajemen User
     if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
       loadApproval(true, true); 
     }
-    // 2. Tarik Laporan Terbaru Otomatis di Dashboard & Riwayat Data
     if (document.getElementById('page-dashboard').style.display === 'block' || document.getElementById('page-data').style.display === 'block') {
       loadDashboardData(true, true);
     }
