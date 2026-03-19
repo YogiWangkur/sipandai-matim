@@ -574,6 +574,38 @@
   window.onload = async function() {
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
+    // --- FITUR AUTO-LOGIN (TIDAK KEMBALI KE LANDING PAGE SAAT REFRESH) ---
+    const savedUser = localStorage.getItem('sipandai_user');
+    const savedRole = localStorage.getItem('sipandai_role');
+    
+    if (savedUser && savedRole) {
+      currentUser = savedUser;
+      currentUserRole = savedRole;
+      
+      document.getElementById('displayUser').innerText = `User: ${currentUser}`;
+      document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
+      
+      if (currentUserRole === 'admin') {
+         document.getElementById('menu-admin').style.display = 'block'; 
+         document.getElementById('btn-edit-logo').style.display = 'block'; 
+      } else {
+         document.getElementById('menu-admin').style.display = 'none'; 
+         document.getElementById('btn-edit-logo').style.display = 'none'; 
+      }
+      
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('authBox').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+
+      let lastPage = localStorage.getItem('sipandai_page');
+      if (currentUserRole === 'admin') {
+        showPage(lastPage || 'dashboard');
+      } else {
+        showPage((lastPage === 'layanan' || lastPage === 'pengaturan') ? lastPage : 'form');
+      }
+    }
+    // ---------------------------------------------------------------------
+
     try {
       // Mengambil tautan layanan di latar belakang
       fetchAPI('getTautanLayanan').then(res => {
@@ -693,6 +725,10 @@
               currentUser = loginRes.username;
               currentUserRole = (loginRes.role || "petugas").toLowerCase(); 
               
+              // Simpan sesi agar tidak logout saat refresh
+              localStorage.setItem('sipandai_user', currentUser);
+              localStorage.setItem('sipandai_role', currentUserRole);
+              
               document.getElementById('displayUser').innerText = `User: ${loginRes.username}`;
               document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
               
@@ -733,6 +769,10 @@
         currentUser = res.username;
         currentUserRole = (res.role || "petugas").toLowerCase(); 
         
+        // Simpan sesi agar tidak logout saat refresh
+        localStorage.setItem('sipandai_user', currentUser);
+        localStorage.setItem('sipandai_role', currentUserRole);
+        
         document.getElementById('displayUser').innerText = `User: ${res.username}`;
         document.getElementById('sidebar-role').innerText = currentUserRole === 'admin' ? 'Administrator' : 'Petugas Lapangan';
         
@@ -756,6 +796,9 @@
       return alert("Akses Ditolak! Menu ini khusus Administrator.");
     }
     if(pageId === 'form' && windowEditRowIdx === null) clearForm();
+
+    // Simpan halaman terakhir yang dibuka ke memori
+    localStorage.setItem('sipandai_page', pageId);
 
     document.querySelectorAll('div[id^="page"]').forEach(div => div.style.display = 'none');
     document.getElementById('page-' + pageId).style.display = 'block';
@@ -1332,6 +1375,12 @@
     if(confirm("Apakah Anda yakin ingin keluar?")){
       currentUser = "";
       currentUserRole = "";
+      
+      // Hapus memori sesi saat keluar
+      localStorage.removeItem('sipandai_user');
+      localStorage.removeItem('sipandai_role');
+      localStorage.removeItem('sipandai_page');
+
       document.getElementById('mainApp').style.display = 'none';
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('landingPage').style.display = 'flex';
