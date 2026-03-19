@@ -1067,16 +1067,78 @@
   }
 
   function exportExcel() {
-    let table = document.getElementById("dataTable");
-    let wb = XLSX.utils.table_to_book(table, {sheet:"Laporan SPAM"});
-    XLSX.writeFile(wb, "Database_SPAM_Matim.xlsx");
+    if(!windowAllReports || windowAllReports.length === 0) return alert("Belum ada data untuk diekspor.");
+    
+    // Menarik SEMUA data dari memori database, bukan dari tabel layar
+    const exportData = windowAllReports.map(r => {
+      let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
+      try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID'); } } catch(e){}
+      
+      return {
+        "Waktu Input": dStr, "Petugas": getSafeVal(r, 'Petugas', 'Pelapor'),
+        "Unit SPAM": getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'), "Kepala Unit": getSafeVal(r, 'NamaKepalaUnit', 'KepalaUnit'),
+        "Satker": getSafeVal(r, 'SatkerPelaksana', 'Satker'), "Kabupaten": getSafeVal(r, 'Kabupaten'),
+        "Kecamatan": getSafeVal(r, 'Kecamatan'), "Desa": getSafeVal(r, 'Desa/Kelurahan', 'Desa'),
+        "Alamat": getSafeVal(r, 'Alamat'), "Lat": getSafeVal(r, 'Latitude', 'Lat'), "Lng": getSafeVal(r, 'Longitude', 'Lng'),
+        "Tahun": getSafeVal(r, 'TahunPembangunan', 'Tahun'), "Biaya": getSafeVal(r, 'BiayaPembangunan', 'Biaya'),
+        "Sumber Dana": getSafeVal(r, 'SumberDana', 'Dana'), "Nilai Asset": getSafeVal(r, 'NilaiAsset', 'Asset'),
+        "Sumber Air": getSafeVal(r, 'SumberAirBaku', 'SumberAir'), "Debit(l/d)": getSafeVal(r, 'DebitAirBaku', 'Debit'),
+        "Sistem Prod": getSafeVal(r, 'SistemProduksi', 'SistemProd'), "Reservoir": getSafeVal(r, 'JenisReservoir', 'Reservoir'),
+        "Aliran": getSafeVal(r, 'SistemAliran', 'Aliran'), "Listrik": getSafeVal(r, 'SumberDayaListrik', 'Listrik'),
+        "Kap.Pasang": getSafeVal(r, 'KapasitasTerpasang', 'KapTerpasang'), "Kap.Prod": getSafeVal(r, 'KapasitasProduksi', 'KapProduksi'),
+        "Kap.Dist": getSafeVal(r, 'KapasitasDistribusi', 'KapDistribusi'), "Terjual": getSafeVal(r, 'AirTerjual', 'Terjual'),
+        "Jam Op": getSafeVal(r, 'JamOperasional', 'JamOp'), "Status": getSafeVal(r, 'StatusKeberfungsian', 'Status'),
+        "T.Teknis": getSafeVal(r, 'JumlahTenagaTeknis', 'TTeknis'), "T.Non": getSafeVal(r, 'JumlahTenagaNon-Teknis', 'TNonTeknis'),
+        "KK": getSafeVal(r, 'JumlahKK', 'KK'), "Jiwa": getSafeVal(r, 'JumlahJiwa', 'Jiwa'), "SR": getSafeVal(r, 'JumlahSR', 'SR')
+      };
+    });
+
+    let ws = XLSX.utils.json_to_sheet(exportData);
+    let wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Database Lengkap SPAM");
+    XLSX.writeFile(wb, "Database_Lengkap_SPAM_Matim.xlsx");
   }
 
   function exportPDF() {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'mm', 'a4');
-    doc.text("Database Monitoring SPAM - Manggarai Timur", 14, 15);
-    doc.autoTable({ html: '#dataTable', startY: 20, styles: { fontSize: 8 }, headStyles: { fillColor: [37, 99, 235] } });
-    doc.save('Database_SPAM.pdf');
+    if(!windowAllReports || windowAllReports.length === 0) return alert("Belum ada data untuk diekspor.");
+    
+    const { jsPDF } = window.jspdf; 
+    // Memakai kertas ukuran A3 Landscape agar puluhan kolom bisa masuk tanpa tabrakan
+    const doc = new jsPDF('l', 'mm', 'a3');
+    doc.text("Database Lengkap Monitoring SPAM - Manggarai Timur", 14, 15);
+    
+    const headers = [['Waktu', 'Petugas', 'Unit SPAM', 'Kepala Unit', 'Satker', 'Kecamatan', 'Desa', 'Tahun', 'Biaya', 'Dana', 'Asset', 'S.Air', 'Debit', 'Sistem', 'Reservoir', 'Aliran', 'Listrik', 'K.Pas', 'K.Pro', 'K.Dis', 'Terjual', 'JamOp', 'Status', 'T.Tek', 'T.Non', 'KK', 'Jiwa', 'SR']];
+    
+    const body = windowAllReports.map(r => {
+      let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
+      try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
+      
+      return [
+        dStr, getSafeVal(r, 'Petugas', 'Pelapor'), getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'), 
+        getSafeVal(r, 'NamaKepalaUnit', 'KepalaUnit'), getSafeVal(r, 'SatkerPelaksana', 'Satker'),
+        getSafeVal(r, 'Kecamatan'), getSafeVal(r, 'Desa/Kelurahan', 'Desa'), 
+        getSafeVal(r, 'TahunPembangunan', 'Tahun'), getSafeVal(r, 'BiayaPembangunan', 'Biaya'), 
+        getSafeVal(r, 'SumberDana', 'Dana'), getSafeVal(r, 'NilaiAsset', 'Asset'),
+        getSafeVal(r, 'SumberAirBaku', 'SumberAir'), getSafeVal(r, 'DebitAirBaku', 'Debit'), 
+        getSafeVal(r, 'SistemProduksi', 'SistemProd'), getSafeVal(r, 'JenisReservoir', 'Reservoir'), 
+        getSafeVal(r, 'SistemAliran', 'Aliran'), getSafeVal(r, 'SumberDayaListrik', 'Listrik'),
+        getSafeVal(r, 'KapasitasTerpasang', 'KapTerpasang'), getSafeVal(r, 'KapasitasProduksi', 'KapProduksi'), 
+        getSafeVal(r, 'KapasitasDistribusi', 'KapDistribusi'), getSafeVal(r, 'AirTerjual', 'Terjual'), 
+        getSafeVal(r, 'JamOperasional', 'JamOp'), getSafeVal(r, 'StatusKeberfungsian', 'Status'),
+        getSafeVal(r, 'JumlahTenagaTeknis', 'TTeknis'), getSafeVal(r, 'JumlahTenagaNon-Teknis', 'TNonTeknis'),
+        getSafeVal(r, 'JumlahKK', 'KK'), getSafeVal(r, 'JumlahJiwa', 'Jiwa'), getSafeVal(r, 'JumlahSR', 'SR')
+      ];
+    });
+
+    doc.autoTable({ 
+      head: headers, 
+      body: body, 
+      startY: 20, 
+      styles: { fontSize: 6, cellPadding: 1, overflow: 'linebreak' }, 
+      headStyles: { fillColor: [37, 99, 235], textColor: 255 }
+    });
+    
+    doc.save('Database_Lengkap_SPAM.pdf');
   }
 
   // ==========================================
