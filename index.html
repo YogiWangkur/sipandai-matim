@@ -10,7 +10,7 @@
   <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg" id="favicon">
   <link rel="apple-touch-icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" id="apple-favicon">
 
-  <!-- Frameworks & Libraries Bootstrap (Tampilan Kesukaan Anda) -->
+  <!-- Frameworks & Libraries Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
@@ -135,7 +135,6 @@
     <div class="mb-3">
       <img id="login-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo" class="rounded-circle shadow" style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; object-fit: cover; border: 3px solid white; background-color: white;">
     </div>
-    <!-- PERUBAHAN TEKS LOGIN -->
     <h3 class="fw-bold m-0">SIPANDAI MATIM</h3>
     <p class="text-muted small mb-4" style="line-height: 1.4;">SISTEM PELAPORAN DATA AIR MINUM TERINTEGRASI MANGGARAI TIMUR</p>
     
@@ -149,7 +148,7 @@
       <div class="text-center small">Belum punya akun? <a href="javascript:void(0)" onclick="toggleAuth('register')" class="text-decoration-none fw-bold">Daftar di sini</a></div>
     </div>
 
-    <!-- Form Register (KINI DENGAN EMAIL) -->
+    <!-- Form Register -->
     <div id="form-register" class="text-start" style="display:none;">
       <div class="alert alert-info py-2 small"><i class="fas fa-info-circle"></i> Akun butuh persetujuan Admin sebelum bisa login.</div>
       <label class="small fw-bold mb-1">Buat Username</label>
@@ -170,14 +169,13 @@
   <div class="sidebar">
     <div class="p-4 border-bottom border-secondary mb-3 d-flex justify-content-between align-items-center">
       <div class="w-100 text-center">
-        <!-- Wadah Logo & Ikon Edit Pensil -->
-        <div class="position-relative d-inline-block">
+        <!-- PERBAIKAN TOMBOL PENSIL (Ruang diperbesar & Z-Index ditaruh paling depan) -->
+        <div class="position-relative d-inline-block" style="padding: 10px; overflow: visible;">
           <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
-          <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow" style="bottom: 5px; right: -5px; padding: 4px 6px; display: none; z-index: 10;" onclick="changeLogoUrl()" title="Ganti Logo">
-            <i class="fas fa-pencil-alt text-primary" style="font-size: 12px;"></i>
+          <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow-lg" style="bottom: 8px; right: 0px; padding: 6px 8px; display: none; z-index: 9999;" onclick="changeLogoUrl()" title="Ganti Logo">
+            <i class="fas fa-pencil-alt text-primary" style="font-size: 14px;"></i>
           </button>
         </div>
-        <!-- PERUBAHAN TEKS SIDEBAR -->
         <h4 class="fw-bold m-0 text-white">SIPANDAI</h4>
         <small class="text-info">Manggarai Timur</small>
       </div>
@@ -209,7 +207,6 @@
 
   <div class="main-content">
     <div class="mobile-topbar">
-      <!-- PERUBAHAN TEKS MOBILE -->
       <h5 class="m-0 fw-bold"><i class="fas fa-tint me-2"></i> SIPANDAI MATIM</h5>
       <button class="btn text-white p-0 border-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-2x"></i></button>
     </div>
@@ -260,7 +257,6 @@
           </table>
         </div>
       </div>
-
     </div>
 
     <!-- PAGE: FORM INPUT -->
@@ -290,7 +286,6 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <!-- Fitur GPS disembunyikan secara aman -->
             <input type="hidden" id="f_lat" value="-">
             <input type="hidden" id="f_lng" value="-">
           </div>
@@ -318,7 +313,16 @@
             <div class="col-md-6"><label class="form-label">2. Debit Air Baku (l/detik)</label><input type="number" step="0.01" id="f_debitAir" class="form-control"></div>
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
-            <div class="col-md-3"><label class="form-label">4. Jenis Reservoir</label><select id="f_reservoir" class="form-select"><option>Di Bawah Tanah</option><option>Di Atas Tanah</option><option>Menara</option></select></div>
+            
+            <!-- PERBAIKAN JENIS RESERVOIR -->
+            <div class="col-md-3">
+              <label class="form-label">4. Jenis Reservoir</label>
+              <select id="f_reservoir" class="form-select">
+                <option>Plat Baja</option>
+                <option>Plat Beton</option>
+              </select>
+            </div>
+            
             <div class="col-md-3"><label class="form-label">5. Sistem Aliran</label><select id="f_aliran" class="form-select"><option>Gravitasi</option><option>Pompa</option><option>Gabungan</option></select></div>
             <div class="col-md-3"><label class="form-label">6. Sumber Listrik</label><select id="f_listrik" class="form-select"><option>Ada</option><option>Tidak Ada</option></select></div>
             
@@ -455,7 +459,7 @@
       <h3 class="fw-bold mb-4">Pengaturan & Akun</h3>
       <div class="row g-4">
         
-        <!-- Mode Tampilan (Untuk Semua Role) -->
+        <!-- Mode Tampilan -->
         <div class="col-md-6">
           <div class="card-custom shadow-sm h-100 border-top border-secondary border-4">
             <h5 class="fw-bold border-bottom pb-2 mb-3"><i class="fas fa-paint-roller me-2 text-primary"></i>Tampilan Aplikasi</h5>
@@ -475,9 +479,7 @@
             
             <label class="form-label small fw-bold mt-2">Pilih Akun Pengguna</label>
             <div class="d-flex gap-2 mb-3">
-              <select id="p_selectUser" class="form-select flex-grow-1">
-                <option value="">-- Memuat Data --</option>
-              </select>
+              <select id="p_selectUser" class="form-select flex-grow-1"><option value="">-- Memuat Data --</option></select>
               <button class="btn btn-sm btn-outline-primary" onclick="loadUsersForReset()"><i class="fas fa-sync"></i></button>
             </div>
 
@@ -524,11 +526,9 @@
 <script>
   // =========================================================================
   // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
-  // CONTOH: const SCRIPT_URL = "https://script.google.com/macros/s/AKfyc.../exec";
   // =========================================================================
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
 
-  // MESIN PENGHUBUNG VERCEL & GOOGLE SPREADSHEET (FETCH API)
   async function fetchAPI(action, payload = {}) {
     if (!SCRIPT_URL || SCRIPT_URL === "") {
       alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris kode!");
@@ -557,24 +557,19 @@
   let isApprovalLoaded = false;
   let checkApprovalInterval = null; 
 
-  // Variabel Global Tautan Layanan
   let linkPanduan = "";
   let linkVideo = "";
   let kontakWa = "";
-  let panduanBase64 = ""; // Tambahan untuk memori upload dokumen
+  let panduanBase64 = ""; 
 
-  // Variabel Global untuk Grafik
   let chartStatus = null;
   let chartKecamatan = null;
-
-  // Variabel Pintar untuk mencegah kedipan layar
   let previousDataString = "";
   let previousApprovalString = "";
 
   window.onload = async function() {
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
-    // --- FITUR AUTO-LOGIN (TIDAK KEMBALI KE LANDING PAGE SAAT REFRESH) ---
     const savedUser = localStorage.getItem('sipandai_user');
     const savedRole = localStorage.getItem('sipandai_role');
     
@@ -587,7 +582,7 @@
       
       if (currentUserRole === 'admin') {
          document.getElementById('menu-admin').style.display = 'block'; 
-         document.getElementById('btn-edit-logo').style.display = 'block'; 
+         document.getElementById('btn-edit-logo').style.display = 'block'; // Tombol pensil ditampilkan untuk sesi tersimpan
       } else {
          document.getElementById('menu-admin').style.display = 'none'; 
          document.getElementById('btn-edit-logo').style.display = 'none'; 
@@ -604,10 +599,8 @@
         showPage((lastPage === 'layanan' || lastPage === 'pengaturan') ? lastPage : 'form');
       }
     }
-    // ---------------------------------------------------------------------
 
     try {
-      // Mengambil tautan layanan di latar belakang
       fetchAPI('getTautanLayanan').then(res => {
         if(res.success && res.data) {
           linkPanduan = res.data.panduan || "";
@@ -696,14 +689,13 @@
 
   async function doRegister() {
     const u = document.getElementById('r-user').value;
-    const e_mail = document.getElementById('r-email').value; // Mengambil data email
+    const e_mail = document.getElementById('r-email').value; 
     const p = document.getElementById('r-pass').value;
     
     if(!u || !e_mail || !p) return alert("Harap isi username, email, dan password dengan lengkap!");
     
     setLoader(true, "Mendaftarkan Akun...");
     try {
-      // Mengirim payload 'e' (email) ke server App Script
       let res = await fetchAPI('registerUser', { u: u, e: e_mail, p: p });
       setLoader(false);
       
@@ -725,7 +717,6 @@
               currentUser = loginRes.username;
               currentUserRole = (loginRes.role || "petugas").toLowerCase(); 
               
-              // Simpan sesi agar tidak logout saat refresh
               localStorage.setItem('sipandai_user', currentUser);
               localStorage.setItem('sipandai_role', currentUserRole);
               
@@ -769,7 +760,6 @@
         currentUser = res.username;
         currentUserRole = (res.role || "petugas").toLowerCase(); 
         
-        // Simpan sesi agar tidak logout saat refresh
         localStorage.setItem('sipandai_user', currentUser);
         localStorage.setItem('sipandai_role', currentUserRole);
         
@@ -778,7 +768,7 @@
         
         if (currentUserRole === 'admin') {
            document.getElementById('menu-admin').style.display = 'block'; 
-           document.getElementById('btn-edit-logo').style.display = 'block'; 
+           document.getElementById('btn-edit-logo').style.display = 'block'; // Tombol pensil ditampilkan untuk Admin
            showPage('dashboard');
         } else {
            document.getElementById('menu-admin').style.display = 'none'; 
@@ -797,7 +787,6 @@
     }
     if(pageId === 'form' && windowEditRowIdx === null) clearForm();
 
-    // Simpan halaman terakhir yang dibuka ke memori
     localStorage.setItem('sipandai_page', pageId);
 
     document.querySelectorAll('div[id^="page"]').forEach(div => div.style.display = 'none');
@@ -816,11 +805,8 @@
         document.getElementById('pengaturan-admin').style.display = 'block';
         document.getElementById('pengaturan-layanan').style.display = 'block';
         
-        // Isi otomatis kotak form dengan link yang sudah tersimpan
         document.getElementById('p_linkVideo').value = linkVideo;
         document.getElementById('p_kontakWa').value = kontakWa;
-
-        // Reset form file upload
         document.getElementById('p_filePanduan').value = "";
         document.getElementById('p_fileStatus').innerText = linkPanduan ? "Buku panduan sudah tersimpan di database. Upload file baru untuk menimpa." : "Belum ada file panduan yang tersimpan.";
 
@@ -863,7 +849,7 @@
       f_sumberAir: document.getElementById('f_sumberAir').value,
       f_debitAir: document.getElementById('f_debitAir').value,
       f_sistemProd: document.getElementById('f_sistemProd').value,
-      f_reservoir: document.getElementById('f_reservoir').value,
+      f_reservoir: document.getElementById('f_reservoir').value, // Mengambil nilai Plat Baja / Plat Beton
       f_aliran: document.getElementById('f_aliran').value,
       f_listrik: document.getElementById('f_listrik').value,
       f_kapTerpasang: document.getElementById('f_kapTerpasang').value,
@@ -1130,7 +1116,6 @@
            actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
         }
         
-        // Memunculkan Email tepat di bawah Username jika ada
         let emailText = u.email ? `<br><small class="text-muted fw-normal" style="font-size: 0.75rem;"><i class="fas fa-envelope me-1"></i>${u.email}</small>` : '';
         
         return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}${emailText}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
@@ -1161,12 +1146,9 @@
 
   function exportExcel() {
     if(!windowAllReports || windowAllReports.length === 0) return alert("Belum ada data untuk diekspor.");
-    
-    // Menarik SEMUA data dari memori database, bukan dari tabel layar
     const exportData = windowAllReports.map(r => {
       let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
       try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID'); } } catch(e){}
-      
       return {
         "Waktu Input": dStr, "Petugas": getSafeVal(r, 'Petugas', 'Pelapor'),
         "Unit SPAM": getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'), "Kepala Unit": getSafeVal(r, 'NamaKepalaUnit', 'KepalaUnit'),
@@ -1185,7 +1167,6 @@
         "KK": getSafeVal(r, 'JumlahKK', 'KK'), "Jiwa": getSafeVal(r, 'JumlahJiwa', 'Jiwa'), "SR": getSafeVal(r, 'JumlahSR', 'SR')
       };
     });
-
     let ws = XLSX.utils.json_to_sheet(exportData);
     let wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Database Lengkap SPAM");
@@ -1194,18 +1175,13 @@
 
   function exportPDF() {
     if(!windowAllReports || windowAllReports.length === 0) return alert("Belum ada data untuk diekspor.");
-    
     const { jsPDF } = window.jspdf; 
-    // Memakai kertas ukuran A3 Landscape agar puluhan kolom bisa masuk tanpa tabrakan
     const doc = new jsPDF('l', 'mm', 'a3');
     doc.text("Database Lengkap Monitoring SPAM - Manggarai Timur", 14, 15);
-    
     const headers = [['Waktu', 'Petugas', 'Unit SPAM', 'Kepala Unit', 'Satker', 'Kecamatan', 'Desa', 'Tahun', 'Biaya', 'Dana', 'Asset', 'S.Air', 'Debit', 'Sistem', 'Reservoir', 'Aliran', 'Listrik', 'K.Pas', 'K.Pro', 'K.Dis', 'Terjual', 'JamOp', 'Status', 'T.Tek', 'T.Non', 'KK', 'Jiwa', 'SR']];
-    
     const body = windowAllReports.map(r => {
       let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
       try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
-      
       return [
         dStr, getSafeVal(r, 'Petugas', 'Pelapor'), getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'), 
         getSafeVal(r, 'NamaKepalaUnit', 'KepalaUnit'), getSafeVal(r, 'SatkerPelaksana', 'Satker'),
@@ -1222,22 +1198,10 @@
         getSafeVal(r, 'JumlahKK', 'KK'), getSafeVal(r, 'JumlahJiwa', 'Jiwa'), getSafeVal(r, 'JumlahSR', 'SR')
       ];
     });
-
-    doc.autoTable({ 
-      head: headers, 
-      body: body, 
-      startY: 20, 
-      styles: { fontSize: 6, cellPadding: 1, overflow: 'linebreak' }, 
-      headStyles: { fillColor: [37, 99, 235], textColor: 255 }
-    });
-    
+    doc.autoTable({ head: headers, body: body, startY: 20, styles: { fontSize: 6, cellPadding: 1, overflow: 'linebreak' }, headStyles: { fillColor: [37, 99, 235], textColor: 255 }});
     doc.save('Database_Lengkap_SPAM.pdf');
   }
 
-  // ==========================================
-  // FITUR PENGATURAN & RESET AKUN
-  // ==========================================
-  
   function toggleDarkMode(isDark) {
     if (isDark) {
       document.body.classList.add('dark-mode');
@@ -1246,8 +1210,6 @@
       document.body.classList.remove('dark-mode');
       localStorage.setItem('theme', 'light');
     }
-    
-    // Refresh warna grafik
     if(document.getElementById('page-dashboard').style.display === 'block' && isDataLoaded) {
         Chart.defaults.color = isDark ? '#94a3b8' : '#475569';
         if(chartStatus) chartStatus.update();
@@ -1286,11 +1248,7 @@
 
     setLoader(true, "Menyimpan Perubahan...");
     try {
-      let res = await fetchAPI('updateUserCredentials', { 
-        rowIdx: rowIdx, 
-        newUsername: newUsername, 
-        newPassword: newPassword 
-      });
+      let res = await fetchAPI('updateUserCredentials', { rowIdx: rowIdx, newUsername: newUsername, newPassword: newPassword });
       setLoader(false);
       if (res.success) {
         alert(res.message);
@@ -1298,15 +1256,10 @@
         document.getElementById('p_newPassword').value = "";
         loadUsersForReset(); 
         isApprovalLoaded = false; 
-      } else {
-        alert("Gagal: " + res.message);
-      }
-    } catch (e) {
-      setLoader(false); alert("Error Sistem: " + e.message);
-    }
+      } else { alert("Gagal: " + res.message); }
+    } catch (e) { setLoader(false); alert("Error Sistem: " + e.message); }
   }
 
-  // FITUR PENGATURAN TAUTAN LAYANAN & BANTUAN
   function bukaLayanan(jenis) {
     if (jenis === 'panduan') {
       if (linkPanduan && linkPanduan.length > 5) window.open(linkPanduan, '_blank');
@@ -1316,8 +1269,8 @@
       else alert('Tautan Video Tutorial belum diatur oleh Admin.');
     } else if (jenis === 'wa') {
       if (kontakWa && kontakWa.length > 5) {
-        let waNum = kontakWa.replace(/\D/g, ''); // Hapus semua karakter non-angka
-        if(waNum.startsWith('0')) waNum = '62' + waNum.substring(1); // Ganti 0 depan jadi 62
+        let waNum = kontakWa.replace(/\D/g, ''); 
+        if(waNum.startsWith('0')) waNum = '62' + waNum.substring(1); 
         window.open('https://wa.me/' + waNum, '_blank');
       } else alert('Nomor WhatsApp belum diatur oleh Admin.');
     }
@@ -1326,7 +1279,7 @@
   function handlePanduanFile(input) {
     if(input.files && input.files[0]) {
       let file = input.files[0];
-      if(file.size > 5 * 1024 * 1024) { // Batas 5MB agar aman
+      if(file.size > 5 * 1024 * 1024) { 
         alert("Ukuran file maksimal 5MB! Silakan kompres PDF Anda terlebih dahulu.");
         input.value = "";
         panduanBase64 = "";
@@ -1351,24 +1304,18 @@
     
     setLoader(true, panduanBase64 ? "Mengunggah Dokumen & Menyimpan..." : "Menyimpan Pengaturan Layanan...");
     try {
-      // Mengirim file base64 ke server
       let res = await fetchAPI('updateTautanLayanan', { panduanBase64: panduanBase64, video: v, wa: w });
       setLoader(false);
       if (res.success) {
         alert("Pengaturan Layanan berhasil disimpan!");
-        if(res.newPanduanUrl) linkPanduan = res.newPanduanUrl; // Simpan link baru hasil upload
+        if(res.newPanduanUrl) linkPanduan = res.newPanduanUrl; 
         linkVideo = v; kontakWa = w;
         
-        // Reset input file agar tidak terupload ulang secara tidak sengaja
         panduanBase64 = "";
         document.getElementById('p_filePanduan').value = "";
         document.getElementById('p_fileStatus').innerText = "File panduan berhasil diperbarui dan tersimpan.";
-      } else {
-        alert("Gagal: " + res.message);
-      }
-    } catch (e) {
-      setLoader(false); alert("Error Sistem: " + e.message);
-    }
+      } else { alert("Gagal: " + res.message); }
+    } catch (e) { setLoader(false); alert("Error Sistem: " + e.message); }
   }
 
   function logout(){ 
@@ -1376,7 +1323,6 @@
       currentUser = "";
       currentUserRole = "";
       
-      // Hapus memori sesi saat keluar
       localStorage.removeItem('sipandai_user');
       localStorage.removeItem('sipandai_role');
       localStorage.removeItem('sipandai_page');
@@ -1388,12 +1334,12 @@
       document.getElementById('l-pass').value = '';
       
       document.getElementById('menu-admin').style.display = 'none';
+      document.getElementById('btn-edit-logo').style.display = 'none';
       isDataLoaded = false;
       isApprovalLoaded = false;
     }
   }
 
-  // --- FITUR AUTO-REFRESH REALTIME (SILENT) ---
   setInterval(() => {
     if (currentUserRole === 'admin' && document.getElementById('page-approval').style.display === 'block') {
       loadApproval(true, true); 
@@ -1402,7 +1348,6 @@
       loadDashboardData(true, true);
     }
   }, 5000);
-
 </script>
 </body>
 </html>
