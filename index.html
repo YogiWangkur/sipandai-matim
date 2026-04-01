@@ -1058,10 +1058,14 @@
         if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
         if(btnDocs === '') btnDocs = '-';
 
+        // PERBAIKAN: Menambahkan Tombol Hapus di sebelah tombol Edit
         return `<tr>
           <td class="ps-3"><small>${dateFormated}</small></td><td>${kec}</td><td class="fw-bold">${desa}</td><td>${spam}</td>
           <td>${status}</td><td>${tahun}</td><td>${jiwa}</td><td>${petugas}</td><td>${btnDocs}</td>
-          <td><button class="btn btn-sm btn-warning py-0 px-2 text-dark shadow-sm" onclick="editLaporan(${index})"><i class="fas fa-edit"></i> Edit</button></td>
+          <td class="text-nowrap">
+            <button class="btn btn-sm btn-warning py-0 px-2 text-dark shadow-sm me-1 mb-1" onclick="editLaporan(${index})"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-sm btn-danger py-0 px-2 shadow-sm mb-1" onclick="hapusLaporan(${index}, '${spam.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i> Hapus</button>
+          </td>
         </tr>`;
       }).join('');
 
@@ -1085,31 +1089,7 @@
 
         return `<tr>
           <td class="text-muted" style="width: 140px;"><i class="fas fa-calendar-alt me-2"></i>${dStr}</td>
-          <td class="fw-bold text-primary">${spam} <span class="text-muted fw-normal small ms-1">(${desa})</span></td>
-          <td class="text-end"><span class="badge ${bClass}">${bText}</span></td>
-        </tr>`;
-      }).join('');
-      document.getElementById('t-recent').innerHTML = recentHTML;
-
-    } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
-  }
-
-  function editLaporan(index) {
-    const r = windowAllReports[index];
-    if(!r) return;
-    windowEditRowIdx = r.rowIdx;
-    
-    const setF = (id, key) => { let val = getSafeVal(r, key); if(val !== '-') document.getElementById(id).value = val; };
-    
-    setF('f_unitSpam', 'NamaUnitSPAM'); setF('f_kepalaUnit', 'NamaKepalaUnit'); setF('f_satker', 'SatkerPelaksana');
-    setF('f_kabupaten', 'Kabupaten'); setF('f_kecamatan', 'Kecamatan'); setF('f_desa', 'Desa/Kelurahan');
-    setF('f_alamat', 'Alamat'); setF('f_lat', 'Latitude'); setF('f_lng', 'Longitude');
-    setF('f_tahun', 'TahunPembangunan'); setF('f_biaya', 'BiayaPembangunan'); setF('f_dana', 'SumberDana');
-    setF('f_asset', 'NilaiAsset'); setF('f_sumberAir', 'SumberAirBaku'); setF('f_debitAir', 'DebitAirBaku');
-    setF('f_sistemProd', 'SistemProduksi'); setF('f_reservoir', 'JenisReservoir'); setF('f_aliran', 'SistemAliran');
-    setF('f_listrik', 'SumberDayaListrik'); setF('f_kapTerpasang', 'KapasitasTerpasang'); setF('f_kapProduksi', 'KapasitasProduksi');
-    setF('f_kapDistribusi', 'KapasitasDistribusi'); setF('f_kapTerjual', 'AirTerjual'); setF('f_jamOp', 'JamOperasional');
-    setF('f_status', 'StatusKeberfungsian'); setF('f_tTeknis', 'JumlahTenagaTeknis'); setF('f_tNonTeknis', 'JumlahTenagaNon-Teknis');
+    setF('f_tTeknis', 'JumlahTenagaTeknis'); setF('f_tNonTeknis', 'JumlahTenagaNon-Teknis');
     setF('f_kk', 'JumlahKK'); setF('f_jiwa', 'JumlahJiwa'); setF('f_sr', 'JumlahSR');
     
     document.querySelectorAll('.img-box img').forEach(img => { img.src = ""; img.style.display = 'none'; });
@@ -1119,6 +1099,30 @@
     btnSubmit.innerHTML = `<i class="fas fa-save me-2"></i> UPDATE DATABASE`;
     btnSubmit.className = 'btn btn-warning w-100 py-3 mt-3 fw-bold rounded-pill shadow-sm text-dark';
     showPage('form'); 
+  }
+
+  // FITUR BARU: Menghapus Laporan
+  async function hapusLaporan(index, namaSpam) {
+    const r = windowAllReports[index];
+    if(!r) return;
+    
+    if(!confirm(`PERINGATAN: Apakah Anda yakin ingin MENGHAPUS laporan '${namaSpam}' ini secara permanen? \n\nData yang sudah dihapus tidak dapat dikembalikan.`)) return;
+
+    setLoader(true, "Menghapus Laporan...");
+    try {
+      let res = await fetchAPI('deleteLaporan', { rowIdx: r.rowIdx });
+      setLoader(false);
+      if(res.success) {
+        alert("Laporan berhasil dihapus dari sistem.");
+        isDataLoaded = false; // Memaksa sistem memuat ulang data terbaru
+        loadDashboardData(true); 
+      } else {
+        alert("Gagal menghapus laporan: " + res.message);
+      }
+    } catch(err) { 
+      setLoader(false); 
+      alert("Error Sistem: " + err.message); 
+    }
   }
 
   async function loadApproval(forceRefresh = false, isSilent = false) {
