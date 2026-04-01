@@ -4,24 +4,20 @@
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- Identitas Web di Google -->
   <title>SIPANDAI - Kabupaten Manggarai Timur</title>
   <meta name="description" content="Sistem Informasi Monitoring SPAM Kabupaten Manggarai Timur. Aplikasi pendataan, pelaporan, dan pemantauan infrastruktur air minum.">
   <link rel="icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" type="image/jpeg" id="favicon">
   <link rel="apple-touch-icon" href="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" id="apple-favicon">
 
-  <!-- Frameworks & Libraries Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   
-  <!-- Libraries untuk Export Excel, PDF & Grafik Visual -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Desain UI Asli yang Clean, Rapi, dan Elegan */
     :root { --primary: #2563eb; --bg: #f8fafc; --sidebar: #0f172a; }
     body { background: var(--bg); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
     
@@ -36,7 +32,6 @@
     .nav-link:hover { background: #1e293b; color: white; }
     .nav-link.active { background: var(--primary); color: white; }
     
-    /* Desain Formulir Clean */
     .form-section { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
     .form-section-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
     .form-label { font-weight: 600; color: #475569; font-size: 0.85rem; margin-bottom: 0.4rem; }
@@ -169,7 +164,7 @@
   <div class="sidebar">
     <div class="p-4 border-bottom border-secondary mb-3 d-flex justify-content-between align-items-center">
       <div class="w-100 text-center">
-        <!-- PERBAIKAN TOMBOL PENSIL (Ruang diperbesar & Z-Index ditaruh paling depan) -->
+        <!-- PERBAIKAN TOMBOL PENSIL -->
         <div class="position-relative d-inline-block" style="padding: 10px; overflow: visible;">
           <img id="sidebar-logo" src="https://drive.google.com/uc?export=view&id=1J9MrqYPngh7bXgaK-hnUIxOMbCKEePou" alt="Logo Dinas" class="rounded-circle mb-2 shadow-sm" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover; border: 2px solid white; background-color: white;">
           <button id="btn-edit-logo" class="btn btn-light rounded-circle position-absolute shadow-lg" style="bottom: 8px; right: 0px; padding: 6px 8px; display: none; z-index: 9999;" onclick="changeLogoUrl()" title="Ganti Logo">
@@ -286,8 +281,14 @@
             
             <div class="col-md-12"><label class="form-label">7. Alamat Lengkap</label><input type="text" id="f_alamat" class="form-control"></div>
             
-            <input type="hidden" id="f_lat" value="-">
-            <input type="hidden" id="f_lng" value="-">
+            <div class="col-md-12">
+              <label class="form-label">8 & 9. Titik Koordinat GPS</label>
+              <div class="input-group shadow-sm">
+                <button class="btn btn-dark" type="button" onclick="getGPS()"><i class="fas fa-map-marker-alt"></i> Ambil Lokasi</button>
+                <input type="text" id="f_lat" class="form-control" placeholder="Latitude" readonly>
+                <input type="text" id="f_lng" class="form-control" placeholder="Longitude" readonly>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -314,7 +315,7 @@
             
             <div class="col-md-3"><label class="form-label">3. Sistem Produksi</label><select id="f_sistemProd" class="form-select"><option>IPA</option><option>Non IPA</option></select></div>
             
-            <!-- PERBAIKAN JENIS RESERVOIR -->
+            <!-- PERBAIKAN RESERVOIR -->
             <div class="col-md-3">
               <label class="form-label">4. Jenis Reservoir</label>
               <select id="f_reservoir" class="form-select">
@@ -523,15 +524,16 @@
   </div>
 </div>
 
+<!-- ============================================== -->
+<!-- SCRIPT UTAMA MENGGUNAKAN FETCH API (MESIN BARU) -->
+<!-- ============================================== -->
 <script>
-  // =========================================================================
-  // GANTI TEKS DI BAWAH DENGAN LINK GOOGLE APPS SCRIPT ANDA
-  // =========================================================================
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxlHuq3u424ZKADZkXpDtPw94weZh7f1FkNBx7UZ912-BYAY1ZpyLrsbAc6QwovUya/exec";
+  // 1. PASTE LINK GOOGLE APPS SCRIPT ANDA DI ANTARA TANDA KUTIP INI:
+  const SCRIPT_URL = "MASUKKAN_LINK_APPS_SCRIPT_ANDA_DISINI";
 
   async function fetchAPI(action, payload = {}) {
-    if (!SCRIPT_URL || SCRIPT_URL === "") {
-      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di baris kode!");
+    if (!SCRIPT_URL || SCRIPT_URL === "" || SCRIPT_URL === "MASUKKAN_LINK_APPS_SCRIPT_ANDA_DISINI") {
+      alert("PERINGATAN ADMIN: Anda belum memasukkan SCRIPT_URL di dalam file index.html pada baris const SCRIPT_URL!");
       return { success: false, message: "Koneksi database belum diatur." };
     }
     try {
@@ -570,7 +572,6 @@
   window.onload = async function() {
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
-    // --- FITUR INSTANT LOGO (Mencegah Delay saat Refresh) ---
     const savedLogo = localStorage.getItem('sipandai_logo');
     if (savedLogo) {
       let loginLogo = document.getElementById('login-logo'); if(loginLogo) loginLogo.src = savedLogo;
@@ -592,7 +593,7 @@
       
       if (currentUserRole === 'admin') {
          document.getElementById('menu-admin').style.display = 'block'; 
-         document.getElementById('btn-edit-logo').style.display = 'block'; // Tombol pensil ditampilkan untuk sesi tersimpan
+         document.getElementById('btn-edit-logo').style.display = 'block'; 
       } else {
          document.getElementById('menu-admin').style.display = 'none'; 
          document.getElementById('btn-edit-logo').style.display = 'none'; 
@@ -625,7 +626,6 @@
         let finalUrl = url;
         let fileId = "";
         
-        // Pengecekan Cerdas untuk segala jenis format Link Google Drive
         if (finalUrl.includes("id=")) {
           fileId = finalUrl.split("id=")[1].split("&")[0];
         } else if (finalUrl.includes("/file/d/")) {
@@ -635,30 +635,25 @@
         }
         
         if (fileId) {
-          // Memaksa link menjadi Direct Image agar bisa dibaca Favicon & Web
           finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
 
-        // Hanya menimpa UI jika logonya berbeda dengan yang ada di memori agar tidak berkedip
         if (finalUrl !== savedLogo) {
-          let loginLogo = document.getElementById('login-logo');
-          if(loginLogo) loginLogo.src = finalUrl;
-          let sidebarLogo = document.getElementById('sidebar-logo');
-          if(sidebarLogo) sidebarLogo.src = finalUrl;
-          let landingLogo = document.getElementById('landing-logo');
-          if(landingLogo) landingLogo.src = finalUrl;
-          
-          let linkIcon = document.getElementById("favicon");
-          if (linkIcon) linkIcon.href = finalUrl;
-          let linkApple = document.getElementById("apple-favicon");
-          if (linkApple) linkApple.href = finalUrl;
-
-          // Simpan ke memori lokal browser agar langsung muncul saat di-refresh nanti
+          let loginLogo = document.getElementById('login-logo'); if(loginLogo) loginLogo.src = finalUrl;
+          let sidebarLogo = document.getElementById('sidebar-logo'); if(sidebarLogo) sidebarLogo.src = finalUrl;
+          let landingLogo = document.getElementById('landing-logo'); if(landingLogo) landingLogo.src = finalUrl;
+          let linkIcon = document.getElementById("favicon"); if (linkIcon) linkIcon.href = finalUrl;
+          let linkApple = document.getElementById("apple-favicon"); if (linkApple) linkApple.href = finalUrl;
           localStorage.setItem('sipandai_logo', finalUrl);
         }
       }
     } catch(err) { console.log("Gagal memuat logo: " + err); }
   };
+
+  function setLoader(show, text="Memproses Data..."){ 
+    document.getElementById('loader-text').innerText = text;
+    document.getElementById('loader').style.display = show ? 'flex' : 'none'; 
+  }
 
   function changeLogoUrl() {
     document.getElementById('logo-upload').click();
@@ -669,20 +664,11 @@
       let reader = new FileReader();
       reader.onload = async e => {
         let base64 = e.target.result;
-        let loginLogo = document.getElementById('login-logo');
-        if(loginLogo) loginLogo.src = base64;
-        let sidebarLogo = document.getElementById('sidebar-logo');
-        if(sidebarLogo) sidebarLogo.src = base64;
-        let landingLogo = document.getElementById('landing-logo');
-        if(landingLogo) landingLogo.src = base64;
-        
-        // Update Favicon secara langsung saat upload
-        let linkIcon = document.getElementById("favicon");
-        if (linkIcon) linkIcon.href = base64;
-        let linkApple = document.getElementById("apple-favicon");
-        if (linkApple) linkApple.href = base64;
-        
-        // Simpan ke memori lokal browser
+        let loginLogo = document.getElementById('login-logo'); if(loginLogo) loginLogo.src = base64;
+        let sidebarLogo = document.getElementById('sidebar-logo'); if(sidebarLogo) sidebarLogo.src = base64;
+        let landingLogo = document.getElementById('landing-logo'); if(landingLogo) landingLogo.src = base64;
+        let linkIcon = document.getElementById("favicon"); if (linkIcon) linkIcon.href = base64;
+        let linkApple = document.getElementById("apple-favicon"); if (linkApple) linkApple.href = base64;
         localStorage.setItem('sipandai_logo', base64);
         
         setLoader(true, "Mengunggah Logo ke Server...");
@@ -698,10 +684,6 @@
     input.value = '';
   }
 
-  function setLoader(show, text="Memproses Data..."){ 
-    document.getElementById('loader-text').innerText = text;
-    document.getElementById('loader').style.display = show ? 'flex' : 'none'; 
-  }
   function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('active'); }
   function toggleAuth(type) {
     document.getElementById('form-login').style.display = type === 'login' ? 'block' : 'none';
@@ -737,14 +719,12 @@
       setLoader(false);
       
       if(res.success) {
-        alert("Pendaftaran berhasil! Sistem akan OTOMATIS masuk ke aplikasi segera setelah Admin menyetujui akun Anda. Mohon tunggu di halaman ini.");
-        
+        alert("Pendaftaran berhasil! Sistem akan OTOMATIS masuk ke aplikasi segera setelah Admin menyetujui akun Anda.");
         toggleAuth('login');
         document.getElementById('l-user').value = u;
         document.getElementById('l-pass').value = p;
 
         if (checkApprovalInterval) clearInterval(checkApprovalInterval);
-
         checkApprovalInterval = setInterval(async () => {
           try {
             let loginRes = await fetchAPI('loginUser', { u: u, p: p });
@@ -771,14 +751,11 @@
               }
               document.getElementById('authBox').style.display = 'none';
               document.getElementById('mainApp').style.display = 'block';
-              
               alert("Hore! Akun Anda telah disetujui oleh Admin. Selamat datang di SIPANDAI.");
             }
           } catch(e) {} 
         }, 5000);
-      } else {
-        alert(res.message);
-      }
+      } else { alert(res.message); }
     } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
@@ -805,7 +782,7 @@
         
         if (currentUserRole === 'admin') {
            document.getElementById('menu-admin').style.display = 'block'; 
-           document.getElementById('btn-edit-logo').style.display = 'block'; // Tombol pensil ditampilkan untuk Admin
+           document.getElementById('btn-edit-logo').style.display = 'block'; 
            showPage('dashboard');
         } else {
            document.getElementById('menu-admin').style.display = 'none'; 
@@ -841,18 +818,27 @@
       if (currentUserRole === 'admin') {
         document.getElementById('pengaturan-admin').style.display = 'block';
         document.getElementById('pengaturan-layanan').style.display = 'block';
-        
         document.getElementById('p_linkVideo').value = linkVideo;
         document.getElementById('p_kontakWa').value = kontakWa;
         document.getElementById('p_filePanduan').value = "";
         document.getElementById('p_fileStatus').innerText = linkPanduan ? "Buku panduan sudah tersimpan di database. Upload file baru untuk menimpa." : "Belum ada file panduan yang tersimpan.";
-
         loadUsersForReset(); 
       } else {
         document.getElementById('pengaturan-admin').style.display = 'none';
         document.getElementById('pengaturan-layanan').style.display = 'none';
       }
     }
+  }
+
+  function getGPS(){
+    setLoader(true, "Mencari Satelit GPS...");
+    navigator.geolocation.getCurrentPosition(pos => {
+      setLoader(false);
+      document.getElementById('f_lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('f_lng').value = pos.coords.longitude.toFixed(6);
+    }, (err) => {
+      setLoader(false); alert("GPS Gagal. Pastikan izin lokasi aktif di browser/HP Anda.");
+    }, { enableHighAccuracy: true });
   }
 
   function preview(input, targetId){
@@ -886,7 +872,7 @@
       f_sumberAir: document.getElementById('f_sumberAir').value,
       f_debitAir: document.getElementById('f_debitAir').value,
       f_sistemProd: document.getElementById('f_sistemProd').value,
-      f_reservoir: document.getElementById('f_reservoir').value, // Mengambil nilai Plat Baja / Plat Beton
+      f_reservoir: document.getElementById('f_reservoir').value, 
       f_aliran: document.getElementById('f_aliran').value,
       f_listrik: document.getElementById('f_listrik').value,
       f_kapTerpasang: document.getElementById('f_kapTerpasang').value,
@@ -955,11 +941,7 @@
               borderWidth: 0, hoverOffset: 4
             }]
           },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } },
-            cutout: '65%'
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } } }, cutout: '65%' }
         });
       }
     }
@@ -981,14 +963,7 @@
               backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex', maxBarThickness: 40
             }]
           },
-          options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: isDark ? '#334155' : '#e2e8f0' } },
-              x: { grid: { display: false } }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: isDark ? '#334155' : '#e2e8f0' } }, x: { grid: { display: false } } } }
         });
       }
     }
@@ -1013,12 +988,10 @@
       const tbody = document.getElementById('t-body');
       
       if(!data || data.length === 0) {
-        document.getElementById('s-total').innerText = "0"; 
-        document.getElementById('s-jiwa').innerText = "0";
+        document.getElementById('s-total').innerText = "0"; document.getElementById('s-jiwa').innerText = "0";
         tbody.innerHTML = '<tr><td colspan="10" class="text-center p-4">Kosong</td></tr>'; 
         document.getElementById('t-recent').innerHTML = '<tr><td class="text-muted text-center py-3">Belum ada laporan masuk.</td></tr>';
-        renderCharts(0, 0, 0, {}); 
-        return;
+        renderCharts(0, 0, 0, {}); return;
       }
       
       let countBaik = 0; let countSebagian = 0; let countRusak = 0; 
@@ -1047,18 +1020,16 @@
         let dateFormated = tglStr;
         try { if (tglStr !== "-" && tglStr !== "") { let d = new Date(tglStr); if (!isNaN(d.getTime())) dateFormated = d.toLocaleString('id-ID', {dateStyle:'short'}); } } catch(e){}
 
-        let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
-        let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun');
-        let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
-        
+        let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa'); let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); 
+        let tahun = getSafeVal(r, 'TahunPembangunan', 'Tahun'); let petugas = getSafeVal(r, 'Petugas', 'Pelapor');
         let lat = getSafeVal(r, 'Latitude', 'Lat'); let lng = getSafeVal(r, 'Longitude', 'Lng');
         let foto = getSafeVal(r, 'FotoKerusakan', 'Foto', 'Foto Kerusakan');
         
         let btnDocs = '';
+        if(lat !== '-' && lng !== '-') btnDocs += `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="btn btn-sm btn-outline-danger py-0 px-2 me-1 mb-1 shadow-sm"><i class="fas fa-map-marker-alt"></i></a>`;
         if(foto !== '-' && foto.includes('http')) btnDocs += `<a href="${foto}" target="_blank" class="btn btn-sm btn-outline-info py-0 px-2 mb-1 shadow-sm"><i class="fas fa-image"></i></a>`;
         if(btnDocs === '') btnDocs = '-';
 
-        // PERBAIKAN: Menambahkan Tombol Hapus di sebelah tombol Edit
         return `<tr>
           <td class="ps-3"><small>${dateFormated}</small></td><td>${kec}</td><td class="fw-bold">${desa}</td><td>${spam}</td>
           <td>${status}</td><td>${tahun}</td><td>${jiwa}</td><td>${petugas}</td><td>${btnDocs}</td>
@@ -1079,17 +1050,36 @@
       let recentHTML = recentData.map(r => {
         let dStr = getSafeVal(r, 'Timestamp', 'Waktu');
         try { if (dStr !== "-" && dStr !== "") { let d = new Date(dStr); if (!isNaN(d.getTime())) dStr = d.toLocaleString('id-ID', {dateStyle:'short', timeStyle:'short'}); } } catch(e){}
-        let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM');
-        let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
+        let spam = getSafeVal(r, 'NamaUnitSPAM', 'UnitSPAM'); let desa = getSafeVal(r, 'Desa/Kelurahan', 'Desa');
         let status = getSafeVal(r, 'StatusKeberfungsian', 'Status', 'Keberfungsian');
         
         let bClass = 'bg-danger'; let bText = 'Rusak';
         if(status.toLowerCase().includes('semua') || status.toLowerCase().includes('baik')) { bClass = 'bg-success'; bText = 'Baik'; }
         else if(status.toLowerCase().includes('sebagian')) { bClass = 'bg-warning text-dark'; bText = 'Sebagian'; }
 
-        return `<tr>
-          <td class="text-muted" style="width: 140px;"><i class="fas fa-calendar-alt me-2"></i>${dStr}</td>
-    setF('f_tTeknis', 'JumlahTenagaTeknis'); setF('f_tNonTeknis', 'JumlahTenagaNon-Teknis');
+        return `<tr><td class="text-muted" style="width: 140px;"><i class="fas fa-calendar-alt me-2"></i>${dStr}</td><td class="fw-bold text-primary">${spam} <span class="text-muted fw-normal small ms-1">(${desa})</span></td><td class="text-end"><span class="badge ${bClass}">${bText}</span></td></tr>`;
+      }).join('');
+      document.getElementById('t-recent').innerHTML = recentHTML;
+
+    } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
+  }
+
+  function editLaporan(index) {
+    const r = windowAllReports[index];
+    if(!r) return;
+    windowEditRowIdx = r.rowIdx;
+    
+    const setF = (id, key) => { let val = getSafeVal(r, key); if(val !== '-') document.getElementById(id).value = val; };
+    
+    setF('f_unitSpam', 'NamaUnitSPAM'); setF('f_kepalaUnit', 'NamaKepalaUnit'); setF('f_satker', 'SatkerPelaksana');
+    setF('f_kabupaten', 'Kabupaten'); setF('f_kecamatan', 'Kecamatan'); setF('f_desa', 'Desa/Kelurahan');
+    setF('f_alamat', 'Alamat'); setF('f_lat', 'Latitude'); setF('f_lng', 'Longitude');
+    setF('f_tahun', 'TahunPembangunan'); setF('f_biaya', 'BiayaPembangunan'); setF('f_dana', 'SumberDana');
+    setF('f_asset', 'NilaiAsset'); setF('f_sumberAir', 'SumberAirBaku'); setF('f_debitAir', 'DebitAirBaku');
+    setF('f_sistemProd', 'SistemProduksi'); setF('f_reservoir', 'JenisReservoir'); setF('f_aliran', 'SistemAliran');
+    setF('f_listrik', 'SumberDayaListrik'); setF('f_kapTerpasang', 'KapasitasTerpasang'); setF('f_kapProduksi', 'KapasitasProduksi');
+    setF('f_kapDistribusi', 'KapasitasDistribusi'); setF('f_kapTerjual', 'AirTerjual'); setF('f_jamOp', 'JamOperasional');
+    setF('f_status', 'StatusKeberfungsian'); setF('f_tTeknis', 'JumlahTenagaTeknis'); setF('f_tNonTeknis', 'JumlahTenagaNon-Teknis');
     setF('f_kk', 'JumlahKK'); setF('f_jiwa', 'JumlahJiwa'); setF('f_sr', 'JumlahSR');
     
     document.querySelectorAll('.img-box img').forEach(img => { img.src = ""; img.style.display = 'none'; });
@@ -1101,7 +1091,6 @@
     showPage('form'); 
   }
 
-  // FITUR BARU: Menghapus Laporan
   async function hapusLaporan(index, namaSpam) {
     const r = windowAllReports[index];
     if(!r) return;
@@ -1114,15 +1103,9 @@
       setLoader(false);
       if(res.success) {
         alert("Laporan berhasil dihapus dari sistem.");
-        isDataLoaded = false; // Memaksa sistem memuat ulang data terbaru
-        loadDashboardData(true); 
-      } else {
-        alert("Gagal menghapus laporan: " + res.message);
-      }
-    } catch(err) { 
-      setLoader(false); 
-      alert("Error Sistem: " + err.message); 
-    }
+        isDataLoaded = false; loadDashboardData(true); 
+      } else { alert("Gagal menghapus laporan: " + res.message); }
+    } catch(err) { setLoader(false); alert("Error Sistem: " + err.message); }
   }
 
   async function loadApproval(forceRefresh = false, isSilent = false) {
@@ -1149,16 +1132,11 @@
         let roleBadge = u.role === 'admin' ? '<span class="badge bg-primary">Admin</span>' : '<span class="badge bg-secondary">Petugas</span>';
         let actionBtns = '';
         if (u.role !== 'admin') {
-          if (u.status === 'Pending') {
-            actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
-          }
+          if (u.status === 'Pending') actionBtns += `<button class="btn btn-sm btn-success me-1 shadow-sm" onclick="accUser(${u.row})"><i class="fas fa-check"></i> Setujui</button>`;
           actionBtns += `<button class="btn btn-sm btn-danger shadow-sm" onclick="delUser(${u.row}, '${u.username}')"><i class="fas fa-trash"></i> Hapus</button>`;
-        } else {
-           actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>';
-        }
+        } else { actionBtns = '<span class="text-muted small fst-italic">Akses Super Admin</span>'; }
         
         let emailText = u.email ? `<br><small class="text-muted fw-normal" style="font-size: 0.75rem;"><i class="fas fa-envelope me-1"></i>${u.email}</small>` : '';
-        
         return `<tr><td class="ps-4 fw-bold" style="color: #000000 !important;">${u.username}${emailText}</td><td>${roleBadge}</td><td>${statusBadge}</td><td>${actionBtns}</td></tr>`;
       }).join('');
     } catch(err) { if(!isSilent) { setLoader(false); alert("Gagal memuat data: " + err.message); } }
@@ -1272,9 +1250,7 @@
       resetUserList.forEach(u => {
         select.innerHTML += `<option value="${u.row}">${u.username} (${u.role === 'admin' ? 'Admin' : 'Petugas'})</option>`;
       });
-    } catch (e) {
-      select.innerHTML = '<option value="">Gagal Memuat</option>';
-    }
+    } catch (e) { select.innerHTML = '<option value="">Gagal Memuat</option>'; }
   }
 
   async function resetUserAccount() {
