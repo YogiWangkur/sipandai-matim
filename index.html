@@ -570,6 +570,16 @@
   window.onload = async function() {
     if (localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
 
+    // --- FITUR INSTANT LOGO (Mencegah Delay saat Refresh) ---
+    const savedLogo = localStorage.getItem('sipandai_logo');
+    if (savedLogo) {
+      let loginLogo = document.getElementById('login-logo'); if(loginLogo) loginLogo.src = savedLogo;
+      let sidebarLogo = document.getElementById('sidebar-logo'); if(sidebarLogo) sidebarLogo.src = savedLogo;
+      let landingLogo = document.getElementById('landing-logo'); if(landingLogo) landingLogo.src = savedLogo;
+      let linkIcon = document.getElementById("favicon"); if (linkIcon) linkIcon.href = savedLogo;
+      let linkApple = document.getElementById("apple-favicon"); if (linkApple) linkApple.href = savedLogo;
+    }
+
     const savedUser = localStorage.getItem('sipandai_user');
     const savedRole = localStorage.getItem('sipandai_role');
     
@@ -629,17 +639,23 @@
           finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
 
-        let loginLogo = document.getElementById('login-logo');
-        if(loginLogo) loginLogo.src = finalUrl;
-        let sidebarLogo = document.getElementById('sidebar-logo');
-        if(sidebarLogo) sidebarLogo.src = finalUrl;
-        let landingLogo = document.getElementById('landing-logo');
-        if(landingLogo) landingLogo.src = finalUrl;
-        
-        let linkIcon = document.getElementById("favicon");
-        if (linkIcon) linkIcon.href = finalUrl;
-        let linkApple = document.getElementById("apple-favicon");
-        if (linkApple) linkApple.href = finalUrl;
+        // Hanya menimpa UI jika logonya berbeda dengan yang ada di memori agar tidak berkedip
+        if (finalUrl !== savedLogo) {
+          let loginLogo = document.getElementById('login-logo');
+          if(loginLogo) loginLogo.src = finalUrl;
+          let sidebarLogo = document.getElementById('sidebar-logo');
+          if(sidebarLogo) sidebarLogo.src = finalUrl;
+          let landingLogo = document.getElementById('landing-logo');
+          if(landingLogo) landingLogo.src = finalUrl;
+          
+          let linkIcon = document.getElementById("favicon");
+          if (linkIcon) linkIcon.href = finalUrl;
+          let linkApple = document.getElementById("apple-favicon");
+          if (linkApple) linkApple.href = finalUrl;
+
+          // Simpan ke memori lokal browser agar langsung muncul saat di-refresh nanti
+          localStorage.setItem('sipandai_logo', finalUrl);
+        }
       }
     } catch(err) { console.log("Gagal memuat logo: " + err); }
   };
@@ -665,6 +681,9 @@
         if (linkIcon) linkIcon.href = base64;
         let linkApple = document.getElementById("apple-favicon");
         if (linkApple) linkApple.href = base64;
+        
+        // Simpan ke memori lokal browser
+        localStorage.setItem('sipandai_logo', base64);
         
         setLoader(true, "Mengunggah Logo ke Server...");
         try {
