@@ -613,10 +613,22 @@
       let url = res.url;
       if(url && url.length > 5) {
         let finalUrl = url;
+        let fileId = "";
+        
+        // Pengecekan Cerdas untuk segala jenis format Link Google Drive
         if (finalUrl.includes("id=")) {
-          let fileId = finalUrl.split("id=")[1].split("&")[0];
+          fileId = finalUrl.split("id=")[1].split("&")[0];
+        } else if (finalUrl.includes("/file/d/")) {
+          fileId = finalUrl.split("/file/d/")[1].split("/")[0];
+        } else if (finalUrl.includes("/d/")) {
+          fileId = finalUrl.split("/d/")[1].split("/")[0];
+        }
+        
+        if (fileId) {
+          // Memaksa link menjadi Direct Image agar bisa dibaca Favicon & Web
           finalUrl = "https://lh3.googleusercontent.com/d/" + fileId;
         }
+
         let loginLogo = document.getElementById('login-logo');
         if(loginLogo) loginLogo.src = finalUrl;
         let sidebarLogo = document.getElementById('sidebar-logo');
@@ -647,6 +659,12 @@
         if(sidebarLogo) sidebarLogo.src = base64;
         let landingLogo = document.getElementById('landing-logo');
         if(landingLogo) landingLogo.src = base64;
+        
+        // Update Favicon secara langsung saat upload
+        let linkIcon = document.getElementById("favicon");
+        if (linkIcon) linkIcon.href = base64;
+        let linkApple = document.getElementById("apple-favicon");
+        if (linkApple) linkApple.href = base64;
         
         setLoader(true, "Mengunggah Logo ke Server...");
         try {
